@@ -162,8 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const charW = 0.62;
       const charH = 1.08;
 
-      const cols = Math.floor(frameW / (scale * charW));
-      const rows = Math.floor(frameH / (scale * charH));
+      const cols = Math.max(24, Math.floor(frameW / (scale * charW)));
+      const rows = Math.max(14, Math.floor(frameH / (scale * charH)));
 
       renderMandelbrot(
         'fractal-art',
