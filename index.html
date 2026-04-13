@@ -59,7 +59,50 @@
     <a href="https://github.com/kxnar" class="footer-link" target="_blank" rel="noopener">github</a>
     <a href="https://linkedin.com/in/narayaka" class="footer-link" target="_blank" rel="noopener">linkedin</a>
   </footer>
+  <script>
+  const artEl = document.getElementById("mandelbrot");
+  const slider = document.getElementById("ascii-resolution");
+  const sliderValue = document.getElementById("ascii-resolution-value");
 
+  const chars = " .,:;irsXA253hMHGS#9B&@";
+
+  function mandelbrot(cx, cy, maxIter) {
+    let x = 0, y = 0, iter = 0;
+    while (x * x + y * y <= 4 && iter < maxIter) {
+      const xNew = x * x - y * y + cx;
+      y = 2 * x * y + cy;
+      x = xNew;
+      iter++;
+    }
+    return iter;
+  }
+
+  function renderAscii(width) {
+    const height = Math.floor(width * 0.55);
+    const maxIter = 60;
+    let output = "";
+
+    for (let py = 0; py < height; py++) {
+      const cy = (py / height) * 2.4 - 1.2;
+      for (let px = 0; px < width; px++) {
+        const cx = (px / width) * 3.5 - 2.5;
+        const iter = mandelbrot(cx, cy, maxIter);
+        const charIndex = Math.floor((iter / maxIter) * (chars.length - 1));
+        output += chars[charIndex];
+      }
+      output += "\n";
+    }
+
+    artEl.textContent = output;
+  }
+
+  slider.addEventListener("input", () => {
+    sliderValue.textContent = slider.value;
+    renderAscii(parseInt(slider.value, 10));
+  });
+
+  renderAscii(parseInt(slider.value, 10));
+</script>
   <script src="script.js"></script>
 </body>
 </html>
