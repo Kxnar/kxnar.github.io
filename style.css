@@ -1,13 +1,12 @@
 /* ===========================
    FONTS
    =========================== */
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
 /* ===========================
    THEME VARIABLES
    =========================== */
 :root {
-  --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
   --bg: #0a0a0a;
   --bg-secondary: #111111;
   --text: #d4d0c8;
@@ -20,6 +19,10 @@
   --nav-bg: rgba(10, 10, 10, 0.92);
   --link: #7eb8b0;
   --link-hover: #b0d8d4;
+}
+
+.ascii-art {
+  font-variant-ligatures: none;
 }
 
 [data-theme="light"] {
