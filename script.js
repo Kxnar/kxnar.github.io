@@ -37,9 +37,7 @@ function renderMandelbrot(elId, cols, rows, xMin, xMax, yMin, yMax) {
   const el = document.getElementById(elId);
   if (!el) return;
 
-  const chars =
-    " `.-':_,^=;><+!rc*/z?sLTv)J7(|Fi{C}fI31tlu[neoZ5Yxjya]2ESwqkP6h9d4VpOGbUAKXHm8RD#$Bg0MNWQ%&@";
-
+  const chars = " .,:;irsXA253hMHGS#9B&@";
   const maxIter = 80;
   let out = '';
 
@@ -48,7 +46,9 @@ function renderMandelbrot(elId, cols, rows, xMin, xMax, yMin, yMax) {
       const cx = xMin + (col / cols) * (xMax - xMin);
       const cy = yMin + (row / rows) * (yMax - yMin);
 
-      let zx = 0, zy = 0, iter = 0;
+      let zx = 0;
+      let zy = 0;
+      let iter = 0;
 
       while (zx * zx + zy * zy <= 4 && iter < maxIter) {
         const tmp = zx * zx - zy * zy + cx;
@@ -57,7 +57,7 @@ function renderMandelbrot(elId, cols, rows, xMin, xMax, yMin, yMax) {
         iter++;
       }
 
-      const t = Math.pow(iter / maxIter, 0.45);
+      const t = Math.pow(iter / maxIter, 0.55);
       out += chars[Math.floor(t * (chars.length - 1))];
     }
     out += '\n';
@@ -75,8 +75,10 @@ function renderJulia(elId, cols, rows, cx, cy) {
 
   const chars = " .,:;=+xX$#@";
   const maxIter = 60;
-  const xMin = -1.6, xMax = 1.6;
-  const yMin = -1.1, yMax = 1.1;
+  const xMin = -1.6;
+  const xMax = 1.6;
+  const yMin = -1.1;
+  const yMax = 1.1;
 
   let out = '';
 
@@ -84,7 +86,6 @@ function renderJulia(elId, cols, rows, cx, cy) {
     for (let col = 0; col < cols; col++) {
       let zx = xMin + (col / cols) * (xMax - xMin);
       let zy = yMin + (row / rows) * (yMax - yMin);
-
       let iter = 0;
 
       while (zx * zx + zy * zy <= 4 && iter < maxIter) {
@@ -137,7 +138,6 @@ function renderLSystemTree(elId, cols, rows) {
   }
 
   drawTree(Math.floor(cols / 2), rows - 1, 0, Math.floor(rows * 0.38), 7);
-
   el.textContent = grid.map(r => r.join('')).join('\n');
 }
 
@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const slider = document.getElementById('fractal-scale');
 
   if (art && slider) {
-    const frameW = 330;
+    const frameW = 360;
     const frameH = 230;
 
     function render(scale) {
@@ -160,10 +160,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const charW = 0.62;
       const charH = 1.08;
 
-      const cols = Math.max(24, Math.floor(frameW / (scale * charW)));
-      const rows = Math.max(14, Math.floor(frameH / (scale * charH)));
+      const cols = Math.max(32, Math.floor(frameW / (scale * charW)));
+      const rows = Math.max(18, Math.floor(frameH / (scale * charH)));
 
-      renderMandelbrot('fractal-art', cols, rows, -2.35, 0.75, -1.15, 1.15);
+      renderMandelbrot('fractal-art', cols, rows, -2.2, 0.8, -1.2, 1.2);
     }
 
     slider.addEventListener('input', () => {
