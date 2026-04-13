@@ -204,6 +204,17 @@ nav {
   line-height: 1.08;
 }
 
+.resolution-control {
+  width: 100%;
+  display: flex;
+  justify-content: center; /* centers the slider */
+}
+
+.resolution-control input[type="range"] {
+  width: 160px;
+  accent-color: var(--accent);
+}
+
 /* ===========================
    HOME TEXT
    =========================== */
