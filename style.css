@@ -339,6 +339,13 @@ footer {
   color: var(--text);
 }
 
+.umbreon {
+  font-size: 6px;
+  line-height: 1.05;
+  opacity: 0.75;
+  margin-top: 1rem;
+}
+
 /* ===========================
    ABOUT ASIDE
    =========================== */
