@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>about &middot; kenar narayaka</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <nav>
+    <div class="nav-left">
+      <span class="nav-brand">&gt;_</span>
+    </div>
+    <div class="nav-links">
+      <button id="theme-toggle" class="theme-btn" aria-label="toggle theme">
+        <span class="theme-label">light mode</span>
+      </button>
+      <a href="index.html" class="nav-link">home</a>
+      <a href="about.html" class="nav-link active">about</a>
+      <a href="blog.html" class="nav-link">blog</a>
+    </div>
+  </nav>
+
+  <main class="container">
+
+    <section class="page-header">
+      <h1 class="page-title">about</h1>
+    </section>
+
+    <div class="about-layout">
+
+      <div class="about-text">
+        <p class="about-intro">
+          hey! i'm kenar &mdash; a first-year at oxford reading comp sci &amp; philosophy at christ church.
+        </p>
+
+        <p>
+          i grew up between loughborough, oxford, and jakarta, which gave me an odd mix of influences.
+          i ended up at the intersection of two things i can't stop thinking about: formal systems
+          and the big philosophical questions &mdash; consciousness, computation, what understanding actually is.
+        </p>
+
+        <p>
+          fractals are something i keep coming back to. there's something almost philosophically interesting
+          about infinite structure arising from a few lines of iteration &mdash; it feels like a clue
+          about how complexity works in general.
+        </p>
+
+        <p>
+          i also think the questions around AI and interpretability are the most urgent
+          right now. not just engineering questions &mdash; what <em>is</em> it that these systems are doing?
+          does the hard problem of consciousness have anything to say here?
+        </p>
+
+        <p>
+          when i'm not in tutorials, i'm probably wandering christ church meadow or going
+          down a rabbit hole on some fractal geometry paper.
+        </p>
+
+        <hr class="divider">
+
+        <div class="now-section">
+          <h2 class="section-title">now:</h2>
+          <ul class="now-list">
+            <li>- first year at oxford, figuring it all out</li>
+            <li>- reading: [add what you're currently reading]</li>
+            <li>- interested in: mechanistic interpretability, formal logic, l-systems, julia sets</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="about-aside">
+        <div class="profile-img-wrap">
+          <img src="logo.jpeg" alt="kenar narayaka" class="profile-img">
+        </div>
+
+        <div class="quick-facts">
+          <h3 class="facts-title">quick facts:</h3>
+          <div class="fact-item">
+            <span class="fact-key">college</span>
+            <span class="fact-val">christ church</span>
+          </div>
+          <div class="fact-item">
+            <span class="fact-key">degree</span>
+            <span class="fact-val">cs &and; philosophy</span>
+          </div>
+          <div class="fact-item">
+            <span class="fact-key">year</span>
+            <span class="fact-val">1st (matric. 2025)</span>
+          </div>
+          <div class="fact-item">
+            <span class="fact-key">from</span>
+            <span class="fact-val">lboro / oxford / jakarta</span>
+          </div>
+        </div>
+
+        <div class="favourites">
+          <h3 class="facts-title">currently reading:</h3>
+          <ul class="fav-list">
+            <li>- [book / paper]</li>
+            <li>- [book / paper]</li>
+            <li>- [book / paper]</li>
+          </ul>
+        </div>
+
+        <pre class="ascii-art aside-fractal" id="julia-aside" aria-hidden="true"></pre>
+
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <a href="https://github.com/kenarnarayaka" class="footer-link" target="_blank" rel="noopener">github</a>
+    <a href="https://linkedin.com/in/kenarnarayaka" class="footer-link" target="_blank" rel="noopener">linkedin</a>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
