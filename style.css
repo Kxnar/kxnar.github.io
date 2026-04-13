@@ -1,13 +1,13 @@
 /* ===========================
    FONTS
    =========================== */
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
 
 /* ===========================
    THEME VARIABLES
    =========================== */
 :root {
-  --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
   --bg: #0a0a0a;
   --bg-secondary: #111111;
   --text: #d4d0c8;
@@ -28,7 +28,8 @@
   --text: #2a2825;
   --text-dim: #888;
   --text-bright: #1a1815;
-  --accent: #2d6a63;
+  --accent: #1f5c56;       
+  --ascii-accent: #144743; 
   --border: #d4d0c8;
   --card-bg: #eeece5;
   --card-border: #d8d4cb;
@@ -151,6 +152,7 @@ nav {
 }
 
 .ascii-art {
+  font-variant-ligatures: none;
   font-family: var(--font-mono);
   font-size: 8px;
   line-height: 1.12;
