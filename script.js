@@ -176,11 +176,19 @@ document.addEventListener('DOMContentLoaded', () => {
       );
     }
 
-    slider.addEventListener('input', () => {
-      render(parseFloat(slider.value));
-    });
 
-    render(parseFloat(slider.value));
+   slider.addEventListener('input', () => {
+     updateSliderVisual(slider);
+   
+     const raw = parseFloat(slider.value);
+     const inverted = 18 - raw; // because 6 + 12 = 18
+   
+     render(inverted);
+   });
+
+   updateSliderVisual(slider);
+   render(18 - parseFloat(slider.value));
+    
   }
 
   renderJulia('julia-aside', 32, 18, -0.4, 0.6);
