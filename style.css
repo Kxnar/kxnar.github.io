@@ -101,7 +101,7 @@ nav {
   text-decoration: none;
   font-size: 0.82rem;
   letter-spacing: 0.04em;
-  transition: color 0.2s;
+  transition: color 0s;
   position: relative;
 }
 
@@ -113,7 +113,7 @@ nav {
   width: 0;
   height: 1px;
   background: var(--accent);
-  transition: width 0.2s;
+  transition: width 0s;
 }
 
 .nav-link:hover {
