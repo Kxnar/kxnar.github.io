@@ -23,9 +23,7 @@ function initTheme() {
   updateLabel();
 
   btn.addEventListener('click', () => {
-    const next =
-      html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-
+    const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     html.setAttribute('data-theme', next);
     localStorage.setItem('theme', next);
     updateLabel();
@@ -69,7 +67,7 @@ function renderMandelbrot(elId, cols, rows, xMin, xMax, yMin, yMax) {
 }
 
 /* ===========================
-   JULIA + BLOG TREE (unchanged)
+   JULIA + BLOG TREE
    =========================== */
 function renderJulia(elId, cols, rows, cx, cy) {
   const el = document.getElementById(elId);
@@ -144,7 +142,7 @@ function renderLSystemTree(elId, cols, rows) {
 }
 
 /* ===========================
-   INIT (KEY PART)
+   INIT
    =========================== */
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
@@ -165,30 +163,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const cols = Math.max(24, Math.floor(frameW / (scale * charW)));
       const rows = Math.max(14, Math.floor(frameH / (scale * charH)));
 
-      renderMandelbrot(
-        'fractal-art',
-        cols,
-        rows,
-        -2.35,
-        0.75,
-        -1.15,
-        1.15
-      );
+      renderMandelbrot('fractal-art', cols, rows, -2.35, 0.75, -1.15, 1.15);
     }
 
+    slider.addEventListener('input', () => {
+      const raw = parseFloat(slider.value);
+      const inverted = 18 - raw;
+      render(inverted);
+    });
 
-   slider.addEventListener('input', () => {
-     updateSliderVisual(slider);
-   
-     const raw = parseFloat(slider.value);
-     const inverted = 18 - raw; // because 6 + 12 = 18
-   
-     render(inverted);
-   });
-
-   updateSliderVisual(slider);
-   render(18 - parseFloat(slider.value));
-    
+    render(18 - parseFloat(slider.value));
   }
 
   renderJulia('julia-aside', 32, 18, -0.4, 0.6);
