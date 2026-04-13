@@ -151,15 +151,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const art = document.getElementById('fractal-art');
   const slider = document.getElementById('fractal-scale');
-  const label = document.getElementById('fractal-scale-value');
 
-  if (art && slider && label) {
+  if (art && slider) {
     const frameW = 330;
     const frameH = 230;
 
     function render(scale) {
       art.style.fontSize = scale + 'px';
-      label.textContent = scale.toFixed(1);
 
       const charW = 0.62;
       const charH = 1.08;
