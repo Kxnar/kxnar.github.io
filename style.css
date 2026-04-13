@@ -530,3 +530,74 @@ footer {
     order: -1;
   }
 }
+
+.fractal-stack {
+  width: 360px;
+  flex: 0 0 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+#fractal-art {
+  width: 360px;
+  height: 230px;
+  margin: 0;
+  white-space: pre;
+  overflow: hidden;
+  display: block;
+  line-height: 1;
+  font-size: 8px;
+  color: var(--ascii-accent);
+  opacity: 0.9;
+}
+
+.resolution-control {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.resolution-control input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 160px;
+  height: 2px;
+  background: var(--border);
+  outline: none;
+  border-radius: 2px;
+}
+
+.resolution-control input[type="range"]::-webkit-slider-runnable-track {
+  height: 2px;
+  background: var(--border);
+  border-radius: 2px;
+}
+
+.resolution-control input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  margin-top: -4px;
+  background: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.resolution-control input[type="range"]::-moz-range-track {
+  height: 2px;
+  background: var(--border);
+  border-radius: 2px;
+}
+
+.resolution-control input[type="range"]::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  background: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  cursor: pointer;
+}
