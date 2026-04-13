@@ -156,9 +156,10 @@ nav {
   line-height: 1.12;
   color: var(--accent);
   white-space: pre;
-  overflow-x: hidden;
+  overflow: hidden;
   opacity: 0.8;
-  user-select: none;
+  user-select: text;
+  cursor: text;
   letter-spacing: 0.02em;
 }
 
