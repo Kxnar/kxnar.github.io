@@ -177,7 +177,6 @@ nav {
   opacity: 0.85;
   user-select: text;
   cursor: text;
-  letter-spacing: 0.02em;
   margin: 0;
   white-space: pre;
   line-height: 1;
@@ -185,34 +184,9 @@ nav {
   letter-spacing: 0;
 }
 
-.ascii-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-top: 0.75rem;
-  font-size: 0.85rem;
-  color: var(--text-dim);
-}
-
-.ascii-controls input[type="range"] {
-  width: 180px;
-  accent-color: var(--accent);
-}
-
 .fractal {
   font-size: 7.5px;
   line-height: 1.08;
-}
-
-.resolution-control {
-  width: 100%;
-  display: flex;
-  justify-content: center; /* centers the slider */
-}
-
-.resolution-control input[type="range"] {
-  width: 160px;
-  accent-color: var(--accent);
 }
 
 /* ===========================
@@ -531,6 +505,9 @@ footer {
   }
 }
 
+/* ===========================
+   FRACTAL WIDGET
+   =========================== */
 .fractal-stack {
   width: 360px;
   flex: 0 0 360px;
@@ -600,4 +577,95 @@ footer {
   border: 1px solid var(--border);
   border-radius: 50%;
   cursor: pointer;
+}
+
+/* ===========================
+   PROJECTS
+   =========================== */
+.project-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  animation: fadeInUp 0.45s ease 0.1s both;
+}
+
+.project-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  padding: 1.1rem 1.3rem;
+}
+
+.project-header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin-bottom: 0.4rem;
+}
+
+.project-prompt {
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 600;
+  user-select: none;
+}
+
+.project-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-bright);
+}
+
+.project-desc {
+  font-size: 0.82rem;
+  color: var(--text);
+  line-height: 1.8;
+  margin-bottom: 0.75rem;
+}
+
+.project-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tag {
+  font-size: 0.70rem;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  padding: 0.1rem 0.45rem;
+  letter-spacing: 0.04em;
+}
+
+.project-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.project-link {
+  font-size: 0.76rem;
+  color: var(--link);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: color 0.2s;
+}
+
+.project-link:hover {
+  color: var(--link-hover);
+}
+
+.project-wip {
+  font-size: 0.70rem;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  padding: 0.1rem 0.45rem;
+  letter-spacing: 0.04em;
+  align-self: center;
 }
