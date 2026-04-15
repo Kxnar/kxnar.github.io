@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <link rel="icon" type="image/jpeg" href="logo.jpeg">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>projects &middot; kxnar</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <nav>
+    <div class="nav-left">
+      <span class="nav-brand">&gt;_</span>
+    </div>
+    <div class="nav-links">
+      <button id="theme-toggle" class="theme-btn" aria-label="toggle theme">
+        <span class="theme-label">light mode</span>
+      </button>
+      <a href="index.html" class="nav-link">home</a>
+      <a href="about.html" class="nav-link">about</a>
+      <a href="projects.html" class="nav-link active">projects</a>
+      <a href="blog.html" class="nav-link">blog</a>
+    </div>
+  </nav>
+
+  <main class="container">
+
+    <section class="page-header">
+      <h1 class="page-title">projects</h1>
+      <p class="page-sub">things i've built or am building</p>
+    </section>
+
+    <div class="project-list">
+
+      <div class="project-card">
+        <div class="project-header">
+          <span class="project-prompt">&gt;</span>
+          <span class="project-name">fractal-explorer</span>
+        </div>
+        <p class="project-desc">
+          my a-level cs project &mdash; an interactive fractal renderer built in python using
+          gpu-accelerated compute. supports mandelbrot, julia sets, and burning ship fractals
+          with real-time zoom and colour palette controls.
+        </p>
+        <div class="project-footer">
+          <div class="project-tags">
+            <span class="tag">python</span>
+            <span class="tag">numpy</span>
+            <span class="tag">opengl</span>
+            <span class="tag">fractals</span>
+          </div>
+          <div class="project-links">
+            <a href="https://github.com/kxnar" class="project-link" target="_blank" rel="noopener">github ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-header">
+          <span class="project-prompt">&gt;</span>
+          <span class="project-name">this site</span>
+        </div>
+        <p class="project-desc">
+          personal portfolio built from scratch with plain html, css, and vanilla javascript.
+          features procedurally rendered ascii fractals (mandelbrot, julia set, l-system tree),
+          a persistent dark / light theme, and a fully responsive layout.
+        </p>
+        <div class="project-footer">
+          <div class="project-tags">
+            <span class="tag">html</span>
+            <span class="tag">css</span>
+            <span class="tag">javascript</span>
+            <span class="tag">fractals</span>
+          </div>
+          <div class="project-links">
+            <a href="https://github.com/kxnar/kxnar.github.io" class="project-link" target="_blank" rel="noopener">github ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-header">
+          <span class="project-prompt">&gt;</span>
+          <span class="project-name">conemarcher</span>
+          <span class="project-wip">wip</span>
+        </div>
+        <p class="project-desc">
+          a real-time cone / ray marcher written in glsl, exploring signed distance functions
+          and procedural geometry. interested in rendering fractals (menger sponge, mandelbox)
+          directly on the gpu without any mesh data.
+        </p>
+        <div class="project-footer">
+          <div class="project-tags">
+            <span class="tag">glsl</span>
+            <span class="tag">webgl</span>
+            <span class="tag">raymarching</span>
+            <span class="tag">sdf</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-header">
+          <span class="project-prompt">&gt;</span>
+          <span class="project-name">mech-interp experiments</span>
+          <span class="project-wip">wip</span>
+        </div>
+        <p class="project-desc">
+          small-scale mechanistic interpretability experiments following anthropic's transformer
+          circuits work. probing attention heads in gpt-2 style models for induction circuits
+          and superposition, using nnsight and transformer-lens.
+        </p>
+        <div class="project-footer">
+          <div class="project-tags">
+            <span class="tag">python</span>
+            <span class="tag">pytorch</span>
+            <span class="tag">transformer-lens</span>
+            <span class="tag">ai-interpretability</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <footer>
+    <a href="https://github.com/kxnar" class="footer-link" target="_blank" rel="noopener">github</a>
+    <a href="https://linkedin.com/in/narayaka" class="footer-link" target="_blank" rel="noopener">linkedin</a>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

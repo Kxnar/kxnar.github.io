@@ -1,6 +1,8 @@
 /* ===========================
    THEME
    =========================== */
+
+// Apply saved theme immediately to avoid flash of wrong theme
 (function () {
   const saved = localStorage.getItem('theme') || 'dark';
   document.documentElement.setAttribute('data-theme', saved);
@@ -14,10 +16,7 @@ function initTheme() {
   const html = document.documentElement;
 
   function updateLabel() {
-    label.textContent =
-      html.getAttribute('data-theme') === 'dark'
-        ? 'light mode'
-        : 'dark mode';
+    label.textContent = html.getAttribute('data-theme') === 'dark' ? 'light mode' : 'dark mode';
   }
 
   updateLabel();
@@ -31,13 +30,24 @@ function initTheme() {
 }
 
 /* ===========================
-   MANDELBROT
+   FRACTAL RENDERERS
    =========================== */
+
+/**
+ * Render a Mandelbrot set as ASCII art into the element with the given id.
+ * @param {string} elId  - target element id
+ * @param {number} cols  - character columns
+ * @param {number} rows  - character rows
+ * @param {number} xMin  - complex plane x min
+ * @param {number} xMax  - complex plane x max
+ * @param {number} yMin  - complex plane y min
+ * @param {number} yMax  - complex plane y max
+ */
 function renderMandelbrot(elId, cols, rows, xMin, xMax, yMin, yMax) {
   const el = document.getElementById(elId);
   if (!el) return;
 
-  const chars = " .,:;irsXA253hMHGS#9B&@";
+  const chars = ' .,:;irsXA253hMHGS#9B&@';
   const maxIter = 80;
   let out = '';
 
@@ -46,10 +56,7 @@ function renderMandelbrot(elId, cols, rows, xMin, xMax, yMin, yMax) {
       const cx = xMin + (col / cols) * (xMax - xMin);
       const cy = yMin + (row / rows) * (yMax - yMin);
 
-      let zx = 0;
-      let zy = 0;
-      let iter = 0;
-
+      let zx = 0, zy = 0, iter = 0;
       while (zx * zx + zy * zy <= 4 && iter < maxIter) {
         const tmp = zx * zx - zy * zy + cx;
         zy = 2 * zx * zy + cy;
@@ -66,19 +73,22 @@ function renderMandelbrot(elId, cols, rows, xMin, xMax, yMin, yMax) {
   el.textContent = out;
 }
 
-/* ===========================
-   JULIA + BLOG TREE
-   =========================== */
+/**
+ * Render a Julia set as ASCII art into the element with the given id.
+ * @param {string} elId - target element id
+ * @param {number} cols - character columns
+ * @param {number} rows - character rows
+ * @param {number} cx   - Julia set constant real part
+ * @param {number} cy   - Julia set constant imaginary part
+ */
 function renderJulia(elId, cols, rows, cx, cy) {
   const el = document.getElementById(elId);
   if (!el) return;
 
-  const chars = " .,:;=+xX$#@";
+  const chars = ' .,:;=+xX$#@';
   const maxIter = 60;
-  const xMin = -1.6;
-  const xMax = 1.6;
-  const yMin = -1.1;
-  const yMax = 1.1;
+  const xMin = -1.6, xMax = 1.6;
+  const yMin = -1.1, yMax = 1.1;
 
   let out = '';
 
@@ -104,14 +114,17 @@ function renderJulia(elId, cols, rows, cx, cy) {
   el.textContent = out;
 }
 
+/**
+ * Render a recursive L-system branching tree as ASCII art.
+ * @param {string} elId - target element id
+ * @param {number} cols - character columns
+ * @param {number} rows - character rows
+ */
 function renderLSystemTree(elId, cols, rows) {
   const el = document.getElementById(elId);
   if (!el) return;
 
-  const grid = [];
-  for (let r = 0; r < rows; r++) {
-    grid.push(new Array(cols).fill(' '));
-  }
+  const grid = Array.from({ length: rows }, () => new Array(cols).fill(' '));
 
   function drawTree(x, y, angle, length, depth) {
     if (depth === 0 || length < 1) return;
@@ -119,14 +132,12 @@ function renderLSystemTree(elId, cols, rows) {
     const radians = (angle - 90) * Math.PI / 180;
     const ex = Math.round(x + Math.cos(radians) * length);
     const ey = Math.round(y + Math.sin(radians) * length);
-
     const steps = Math.ceil(Math.hypot(ex - x, ey - y) * 2);
 
     for (let i = 0; i <= steps; i++) {
       const t = i / steps;
       const px = Math.round(x + (ex - x) * t);
       const py = Math.round(y + (ey - y) * t);
-
       if (px >= 0 && px < cols && py >= 0 && py < rows) {
         grid[py][px] = depth > 4 ? '#' : '|';
       }
@@ -144,37 +155,34 @@ function renderLSystemTree(elId, cols, rows) {
 /* ===========================
    INIT
    =========================== */
-document.addEventListener('DOMContentLoaded', () => {
-  initTheme();
 
+function initMandelbrotSlider() {
   const art = document.getElementById('fractal-art');
   const slider = document.getElementById('fractal-scale');
+  if (!art || !slider) return;
 
-  if (art && slider) {
-    const frameW = 360;
-    const frameH = 230;
+  const frameW = 360;
+  const frameH = 230;
+  const charW = 0.62;
+  const charH = 1.08;
 
-    function render(scale) {
-      art.style.fontSize = scale + 'px';
-
-      const charW = 0.62;
-      const charH = 1.08;
-
-      const cols = Math.max(32, Math.floor(frameW / (scale * charW)));
-      const rows = Math.max(18, Math.floor(frameH / (scale * charH)));
-
-      renderMandelbrot('fractal-art', cols, rows, -2.2, 0.8, -1.2, 1.2);
-    }
-
-    slider.addEventListener('input', () => {
-      const raw = parseFloat(slider.value);
-      const inverted = 18 - raw;
-      render(inverted);
-    });
-
-    render(18 - parseFloat(slider.value));
+  function render(scale) {
+    art.style.fontSize = scale + 'px';
+    const cols = Math.max(32, Math.floor(frameW / (scale * charW)));
+    const rows = Math.max(18, Math.floor(frameH / (scale * charH)));
+    renderMandelbrot('fractal-art', cols, rows, -2.2, 0.8, -1.2, 1.2);
   }
 
+  slider.addEventListener('input', () => {
+    render(18 - parseFloat(slider.value));
+  });
+
+  render(18 - parseFloat(slider.value));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  initMandelbrotSlider();
   renderJulia('julia-aside', 32, 18, -0.4, 0.6);
   renderLSystemTree('blog-fractal', 48, 22);
 });
