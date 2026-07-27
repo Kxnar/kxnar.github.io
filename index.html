@@ -1,47 +1,419 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-  <link rel="icon" type="image/jpeg" href="logo.jpeg">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>kxnar</title>
+  <meta name="description" content="kenar narayaka — comp sci &amp; philosophy at christ church, oxford. fractals, logic, ai interpretability.">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="kxnar">
+  <meta property="og:description" content="kenar narayaka — comp sci &amp; philosophy at christ church, oxford. fractals, logic, ai interpretability.">
+  <meta property="og:url" content="https://kxnar.github.io/">
+  <meta property="og:image" content="https://kxnar.github.io/logo.jpeg">
+  <meta name="twitter:card" content="summary">
+
+  <link rel="icon" type="image/jpeg" href="logo.jpeg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap">
+
   <link rel="stylesheet" href="style.css">
+
+  <!-- Applied before first paint so a light-mode visitor never sees a dark flash.
+       This has to stay inline in <head>; deferred scripts run too late. -->
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('theme');
+        if (saved !== 'light' && saved !== 'dark') saved = 'dark';
+        document.documentElement.setAttribute('data-theme', saved);
+      } catch (e) { /* private mode — the dark default in the markup stands */ }
+    })();
+  </script>
 </head>
 <body>
 
-  <nav id="site-nav"></nav>
+  <!-- vim-style block cursor; snaps to the character under the pointer -->
+  <!--<div id="vim-cursor" aria-hidden="true"></div>-->
 
-  <main class="container">
-    <section class="hero">
-      <div class="fractal-stack">
-        <pre class="ascii-art fractal" id="fractal-art" aria-hidden="true"></pre>
+  <div class="term" id="term">
 
-        <div class="resolution-control">
-          <input id="fractal-scale" type="range" min="6" max="12" step="1" value="10">
+    <div class="term-bar">
+      <span class="term-bar-dots" aria-hidden="true">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      </span>
+      <span class="term-bar-title" id="term-title">kenar@kenar: ~/home</span>
+      <span class="term-bar-meta" id="term-size" aria-hidden="true">96&times;32</span>
+    </div>
+
+    <nav class="term-tabs" id="term-tabs" aria-label="sections"></nav>
+
+    <main class="term-body" id="term-body">
+
+    <div class="term-main" id="term-main">
+
+      <!-- =========================================================
+           HOME  (index + about, merged)
+           ========================================================= -->
+      <section class="page" id="home" aria-label="home">
+        <div class="landing">
+
+          <div class="bio">
+            <h1 class="name" data-type="char">Kenar Narayaka</h1>
+            <p class="location">&#9906; Loughborough / Oxford / Jakarta</p>
+
+            <!--<div class="bio-lines">
+              <p>- comp sci &and; phil @ christ church, university of oxford</p>
+              <p>- reach me at <span class="highlight">kenar.narayaka [at] cs.ox.ac.uk</span></p>
+            </div>-->
+
+            <p class="about-intro">
+              Hi! Currently studying Computer Science and Philosophy at
+            </p>
+<!--
+            <p>
+              i was born in jakarta, and moved to loughborough at the age of 5, and have lived there ever since.
+              since uni started, i have since been based inbetween silver and oxford.
+              i grew up mainly on pokemon, videogames, and anime.
+              recently, ive been trying to improve at guitar and basketball, and trying to read more.
+              my favourite player is de'aaron fox; i did not hop on the spurs bandwagon because of wemby.
+            </p>
+
+            <p>
+              i love learning new programming languages. exploring features of different paradigms and their tradeoffs and uses
+              is something i used to do a lot; and also how said features are implemented in the compiler / interpreter.
+              particularly, functional programming in haskell/ocaml has been very eye-opening.
+            </p>
+-->
+            <p>
+              fractals are things i keep coming back to. in fact, i did my whole a-level cs project on them!
+              since then i have abandoned said project but it is something i want to work on more when i have time.
+            </p>
+<!--
+            <p>
+              i used to be a massive disbeliever in generative ai, but as time passes and it gets better and better it's hard to ignore.
+              the capabilities of ai seem endless and frankly quite terrifying,
+              and i am currently learning as much as possible on the topic.
+            </p>
+-->
+
+                        <!-- everything that isn't professional background lives in here -->
+            <details class="funfacts">
+              <summary>fun facts</summary>
+              <!-- data-no-type: collapsed by default, so typing it would burn
+                   the reveal budget on text nobody can see -->
+              <div class="funfacts-body" data-no-type>
+
+                <div class="quick-facts">
+                  <h3 class="facts-title">quick facts:</h3>
+                  <div class="fact-item">
+                    <span class="fact-key">college</span>
+                    <span class="fact-val">1st year / freshman</span>
+                  </div>
+                  <div class="fact-item">
+                    <span class="fact-key">favourite pokemon</span>
+                    <span class="fact-val">umbreon (shiny)</span>
+                  </div>
+                  <div class="fact-item">
+                    <span class="fact-key">birthday</span>
+                    <span class="fact-val">07/07/07 (7am)</span>
+                  </div>
+                  <div class="fact-item">
+                    <span class="fact-key">favourite nba team</span>
+                    <span class="fact-val">san antonio spurs</span>
+                  </div>
+                </div>
+
+                <div class="favourites">
+                  <h3 class="facts-title">also reading:</h3>
+                  <ul class="fav-list">
+                    <li>- lord of the mysteries</li>
+                    <li>- one piece</li>
+                  </ul>
+                </div>
+
+                <!--<ul class="now-list">-->
+                  <!--<li>- send me revision notes please i need them for prelim exams at oxford</li>-->
+                <!--</ul>-->
+
+              </div>
+
+              <!--<div class="interests-inline">
+                            <p><strong>interests:</strong></p>
+                            <p>- philosophy of mind, logic</p>
+                            <p>- fractals &amp; conemarching / raymarching</p>
+                            <p>- ai interpretability</p>
+                          </div>
+
+                          <hr class="divider">
+
+                          <div class="now-section">
+                            <h2 class="section-title" data-type="char">philosophy reading list:</h2>
+                            <ul class="fav-list">
+                              <li>- Naming and Necessity ~ Saul Kripke</li>
+                              <li>- The Unreality of Time ~ J.M.E. McTaggart</li>
+                              <li>- The World as Will and Representation ~ Arthur Schopenhauer</li>
+                              <li>- Knowledge and Belief: An Introduction to the Logic of the Two Notions ~ Jaakko Hintikka</li>
+                            </ul>
+                          </div>
+
+                          <hr class="divider">
+
+                          <div class="now-section">
+                            <h2 class="section-title" data-type="char">what im up to now:</h2>
+                            <ul class="now-list">
+                              <li>- leetcoding</li>
+                              <li>- interested in: l-systems, ai, fractals, graphics programming, gpu architecture</li>
+                            </ul>
+                          </div>
+
+                          <hr class="divider">
+
+                          <div class="now-section">
+                            <h2 class="section-title" data-type="char">currently reading:</h2>
+                            <ul class="fav-list">
+                              <li>- <a href="https://transformer-circuits.pub/" class="ext-link" target="_blank" rel="noopener">anthropic's transformer circuit interpretability research</a></li>
+                              <li>- whatever my phil tutor sets me</li>
+                            </ul>
+                          </div>-->
+
+            </details>
+          </div>
+
+          <aside class="rail">
+
+            <!-- ascii fractal carousel -->
+            <figure class="frac-frame" data-no-type>
+              <button class="frac-arrow prev" type="button" aria-label="previous fractal">&lsaquo;</button>
+              <pre class="ascii-art fractal" id="frac-art" aria-hidden="true"></pre>
+              <button class="frac-arrow next" type="button" aria-label="next fractal">&rsaquo;</button>
+            </figure>
+
+            <div class="frac-meta" data-no-type>
+              <p class="frac-caption" id="frac-caption">&nbsp;</p>
+              <p class="frac-formula" id="frac-formula">&nbsp;</p>
+              <div class="frac-controls">
+                <span class="frac-count" id="frac-count">[00/00]</span>
+                <label class="frac-detail-label" for="frac-detail">detail</label>
+                <input id="frac-detail" type="range" min="6" max="12" step="1" value="10" autocomplete="off">
+              </div>
+            </div>
+
+            <!--<div class="profile-img-wrap">
+              <img src="logo.jpeg" alt="kenar narayaka" class="profile-img" loading="lazy">
+            </div>-->
+
+          </aside>
         </div>
-      </div>
+      </section>
 
-      <div class="intro">
-        <h1 class="name">kenar narayaka</h1>
-        <p class="location">⚲ loughborough / oxford / jakarta</p>
+      <!-- =========================================================
+           EDUCATION
+           ========================================================= -->
+      <section class="page" id="education" aria-label="education">
+        <header class="page-header">
+          <h1 class="page-title" data-type="char">education</h1>
+          <p class="page-sub">modules i've taken, and my notes on them.</p>
+        </header>
 
-        <div class="bio-lines">
-          <p>- comp sci &and; phil @ christ church, university of oxford</p>
-          <p>- reach me at <span class="highlight">kenar.narayaka [at] cs.ox.ac.uk</span></p>
+        <div class="institution">
+          <div class="inst-head">
+            <a href="https://www.chch.ox.ac.uk/" class="inst-name" target="_blank" rel="noopener">Christ Church, University of Oxford</a>
+            <span class="inst-meta">2025 &ndash;</span>
+          </div>
+          <div class="inst-role">b.a. computer science &amp; philosophy</div>
+          <div class="inst-role">b.a. computer science &amp; philosophy</div>
         </div>
 
-        <div class="interests-inline">
-          <p><strong>interests:</strong></p>
-          <p>- philosophy of mind, logic</p>
-          <p>- fractals &amp; conemarching / raymarching</p>
-          <p>- ai interpretability</p>
+        <p class="section-title coursework-head">
+          <span>coursework</span>
+          <span class="grad-note" id="notes-status"></span>
+        </p>
+
+        <!-- filled from the MODULES array in script.js -->
+        <div class="modules" id="module-list"></div>
+      </section>
+
+      <!-- =========================================================
+           PROJECTS
+           ========================================================= -->
+      <section class="page" id="projects" aria-label="projects">
+        <header class="page-header">
+          <h1 class="page-title" data-type="char">projects</h1>
+          <p class="page-sub">things i've built or am building</p>
+        </header>
+
+        <div class="project-list">
+
+          <div class="project-card">
+            <div class="project-header">
+              <span class="project-prompt" aria-hidden="true">&gt;</span>
+              <span class="project-name">fracta</span>
+            </div>
+            <p class="project-desc">
+              my a-level cs project; an interactive 3d fractal renderer built with three.js.
+              supports mandelbulb, juliabulb, and various other fractals,
+              with real-time zoom, iteration, positioning and colour palette controls. (no github repo because i lost the project lowkey)
+            </p>
+            <div class="project-footer">
+              <div class="project-tags">
+                <span class="tag">three.js</span>
+                <span class="tag">glsl</span>
+                <span class="tag">javascript</span>
+              </div>
+              <div class="project-links">
+                <a href="https://youtu.be/foJNU14CKbQ" class="project-link" target="_blank" rel="noopener">nea project demo &#8599;</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="project-card">
+            <div class="project-header">
+              <span class="project-prompt" aria-hidden="true">&gt;</span>
+              <span class="project-name">shotlab</span>
+            </div>
+            <p class="project-desc">
+              a personal project; uses computer vision to critique and suggest improvements on your shooting form.
+            </p>
+            <div class="project-footer">
+              <div class="project-tags">
+                <span class="tag">tauri v2</span>
+                <span class="tag">rust</span>
+                <span class="tag">svelte</span>
+              </div>
+              <div class="project-links">
+                <a href="https://github.com/Kxnar/ShotLab" class="project-link" target="_blank" rel="noopener">github repo &#8599;</a>
+              </div>
+            </div>
+          </div>
+
         </div>
-      </div>
-    </section>
-  </main>
+      </section>
 
-  <footer id="site-footer"></footer>
+      <!-- =========================================================
+           BLOG
+           ========================================================= -->
+      <section class="page" id="blog" aria-label="blog">
+        <header class="page-header">
+          <h1 class="page-title" data-type="char">blog</h1>
+          <p class="page-sub">coming soon</p>
+        </header>
 
-  <script src="script.js"></script>
+        <div class="blog-coming-soon">
+          <pre class="ascii-art umbreon" aria-hidden="true" data-no-type>
+⢀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⡀
+⠸⣿⣿⣷⣦⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣶⣾⣿⣿⠇
+⠀⢻⣿⣿⠿⠛⠳⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⠞⠛⠻⢿⣿⡟⠀
+⠀⠘⣟⠁⠀⢀⣠⣼⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⣷⣶⣤⡀⠀⣹⠃⠀
+⠀⠀⠈⠳⣴⣿⣿⣿⣿⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⠞⠁⠀⠀
+⠀⠀⠀⠀⠈⠛⢿⣿⣿⣿⡀⣀⣤⣤⣤⣤⣤⣀⠀⣾⣿⣿⡿⠛⠁⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠉⠛⣿⣿⣿⣿⡿⣛⢿⣿⣿⣿⣿⠟⠁⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⣿⣿⣿⢰⣿⡇⣿⣿⣿⣿⣇⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⣿⡟⠛⢿⣿⣮⣛⣡⣿⣿⠛⢻⣿⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⢿⣧⠀⠿⢻⣿⣿⣿⡿⠹⠁⣼⣿⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠘⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢻⣿⣿⣿⣿⣿⡟⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⣿⣿⣿⣿⣿⡄⠀⠀⠀⠀⠀⠀⣀⣤⣾⡇
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⣿⣿⣿⣿⣿⣿⣿⣿⡀⠀⢀⡤⠐⠻⣿⣿⡿⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣴⣷⣤⣄⠀⠈⢻⠇⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣠⠋⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⢠⣾⡿⣿⣿⣿⣿⣿⣿⣿⡿⣿⣿⣿⣿⣿⠟⠁⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⡞⣿⣿⣿⣿⣿⣿⢼⣿⣿⡿⠛⠁⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⣧⠙⣿⣧⣿⣿⣿⣿⣿⣿⣾⣿⢋⡇⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⢹⣁⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣸⠃⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⣠⣤⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣤⡀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠈⠿⠿⠿⣿⣿⣿⣿⠋⢿⣿⣿⣿⠿⠿⠿⠃⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠀⠀⠀⠈⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+</pre>
+          <p>topics in the queue:</p>
+          <ul class="topic-queue">
+            <li>- oxford first year in summary + first impressions</li>
+            <li>- who knows what else</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- =========================================================
+           INTERACTIVE  (pokemon region map — built by region.js, drawn
+           by either region-tiles.js (pixels) or the ascii renderer)
+           ========================================================= -->
+      <section class="page map-page" id="interactive" aria-label="interactive region map">
+        <header class="page-header">
+          <h1 class="page-title" data-type="char">interactive</h1>
+          <p class="page-sub">
+            click a town, or walk there with the arrow keys / wasd.
+            <button id="map-mode-toggle" class="status-link map-mode-btn" type="button"
+                    aria-label="switch map renderer" aria-pressed="true"><span class="map-mode-label">ascii</span></button>
+          </p>
+        </header>
+
+        <!-- map plus, in whatever width is left over, the umbreon —
+             region.js clones that art from the blog section and sizes both.
+             The canvas and the <pre> are the two renderer roots; .region
+             carries mode-tiles / mode-ascii and only one is ever shown. -->
+        <div class="region-stage" id="region-stage" data-no-type>
+          <div class="region" id="region">
+            <canvas class="region-canvas" id="region-canvas" aria-hidden="true"></canvas>
+            <pre class="region-grid" id="region-grid" aria-hidden="true"></pre>
+            <div class="region-sprite" id="region-sprite" aria-hidden="true"></div>
+            <div class="region-critter" id="region-critter" aria-hidden="true"></div>
+            <nav class="region-towns" id="region-towns" aria-label="towns"></nav>
+            <div class="region-readout" id="region-readout" aria-hidden="true"></div>
+            <div class="region-flash" id="region-flash" aria-hidden="true"></div>
+          </div>
+        </div>
+
+        <aside class="drawer" id="drawer" role="dialog" aria-modal="false" aria-labelledby="drawer-title" hidden>
+          <header class="drawer-head">
+            <h2 class="drawer-title" id="drawer-title">&mdash;</h2>
+            <button class="drawer-close" id="drawer-close" type="button" aria-label="close panel">&times;</button>
+          </header>
+          <div class="drawer-body" id="drawer-body"></div>
+        </aside>
+      </section>
+
+    </div><!-- /.term-main -->
+
+      <aside class="term-side" id="term-side" hidden>
+        <header class="side-head">
+          <span class="side-title">output</span>
+          <button class="side-close" id="side-close" type="button" aria-label="close output pane">&times;</button>
+        </header>
+        <div class="side-log" id="side-log" aria-live="polite"></div>
+      </aside>
+
+    </main>
+
+    <div class="term-log" id="term-log" aria-live="polite" aria-atomic="false"></div>
+
+    <form class="term-prompt" id="term-prompt" autocomplete="off">
+      <label class="sr-only" for="cmd">terminal command</label>
+      <span class="ps1" id="ps1">kenar@kxnar:~/home$</span>
+      <input id="cmd" name="cmd" type="text" autocomplete="off" autocorrect="off"
+             autocapitalize="off" spellcheck="false" aria-describedby="ps1">
+    </form>
+
+    <div class="term-status" id="term-status">
+      <span class="status-mode" id="status-mode">-- NORMAL --</span>
+      <span class="status-path" id="status-path">~/home</span>
+      <span class="status-spacer"></span>
+      <a href="https://github.com/kxnar" class="status-link" target="_blank" rel="noopener">github</a>
+      <a href="https://linkedin.com/in/narayaka" class="status-link" target="_blank" rel="noopener">linkedin</a>
+      <a href="cv.pdf" class="status-link" target="_blank" rel="noopener">cv</a>
+      <button id="theme-toggle" class="status-link theme-btn" type="button" aria-label="toggle theme">
+        <span class="theme-label">light</span>
+      </button>
+      <span class="status-pos" id="status-pos">utf-8</span>
+    </div>
+
+  </div>
+
+  <script defer src="fractals.js"></script>
+  <script defer src="region-tiles.js"></script>
+  <script defer src="region.js"></script>
+  <script defer src="script.js"></script>
 </body>
 </html>
