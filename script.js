@@ -1,4 +1,50 @@
 /* ===========================
+   SHARED LAYOUT (nav + footer)
+   =========================== */
+
+const NAV_PAGES = [
+  { href: 'index.html', label: 'home' },
+  { href: 'about.html', label: 'about' },
+  { href: 'projects.html', label: 'projects' },
+  { href: 'blog.html', label: 'blog' },
+];
+
+function initLayout() {
+  const nav = document.getElementById('site-nav');
+  const footer = document.getElementById('site-footer');
+  if (!nav && !footer) return;
+
+  let current = location.pathname.split('/').pop();
+  if (current === '') current = 'index.html';
+
+  if (nav) {
+    const links = NAV_PAGES
+      .map(p => `<a href="${p.href}" class="nav-link${p.href === current ? ' active' : ''}">${p.label}</a>`)
+      .join('\n      ');
+
+    nav.innerHTML = `
+    <div class="nav-left">
+      <span class="nav-brand">&gt;_</span>
+    </div>
+    <div class="nav-links">
+      <button id="theme-toggle" class="theme-btn" aria-label="toggle theme">
+        <span class="theme-label">light mode</span>
+      </button>
+      ${links}
+    </div>
+  `;
+  }
+
+  if (footer) {
+    footer.innerHTML = `
+    <a href="https://github.com/kxnar" class="footer-link" target="_blank" rel="noopener">github</a>
+    <a href="https://linkedin.com/in/narayaka" class="footer-link" target="_blank" rel="noopener">linkedin</a>
+    <a href="cv.pdf" class="footer-link" target="_blank" rel="noopener">cv</a>
+  `;
+  }
+}
+
+/* ===========================
    THEME
    =========================== */
 
@@ -181,6 +227,7 @@ function initMandelbrotSlider() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  initLayout();
   initTheme();
   initMandelbrotSlider();
   renderJulia('julia-aside', 32, 18, -0.4, 0.6);
