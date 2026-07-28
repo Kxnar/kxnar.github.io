@@ -440,16 +440,22 @@ window.KX = window.KX || {};
 
     var tabs = document.getElementById('term-tabs');
     if (tabs) {
+      var active = null;
       Array.prototype.forEach.call(tabs.children, function (a) {
         var here = a.dataset.route === route.id;
         a.classList.toggle('here', here);
-        // The strip hides its scrollbar, so on a narrow screen the active tab
-        // can sit off the end with nothing to say so. 'nearest' both ways
-        // keeps this from scrolling any ancestor.
-        if (here && a.scrollIntoView) {
-          a.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-        }
+        if (here) active = a;
       });
+      // The strip hides its scrollbar, so on a narrow screen the active tab
+      // can sit off the end with nothing to say so. Pull it to the left edge
+      // — the browser clamps at max scroll, so the last tabs come to rest
+      // wherever they can, and the tabs after it are what's revealed.
+      // Written as a delta on scrollLeft rather than scrollIntoView so no
+      // ancestor scroller can be moved along with it.
+      if (active) {
+        tabs.scrollLeft +=
+          active.getBoundingClientRect().left - tabs.getBoundingClientRect().left;
+      }
     }
 
     setPrompt(route);

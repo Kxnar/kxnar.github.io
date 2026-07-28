@@ -805,11 +805,6 @@ window.KX = window.KX || {};
 
       if (umbreonEl) umbreonEl.hidden = true;   // no column to spare
 
-      // the drawer sits above the console rather than over it — dismissing
-      // with B and confirming with A only works if the buttons are reachable
-      var gb = document.getElementById('gb-console');
-      if (gb && page) page.style.setProperty('--gb-h', gb.offsetHeight + 'px');
-
       setCamera();
       return;
     }
@@ -999,7 +994,10 @@ window.KX = window.KX || {};
   }
 
   /* -----------------------------------------------------
-     Game boy console — the touch equivalent of the arrow keys
+     Game boy console — the touch equivalent of the arrow keys, and
+     nothing more. There is no A/B/START/SELECT: walking onto a town
+     opens its panel by itself, the panel's own × closes it, and the
+     renderer swap is the #map-mode-toggle button in the section header.
      ----------------------------------------------------- */
 
   // Press and hold to keep walking. STEP_MS (55) is the walk *animation*
@@ -1008,22 +1006,6 @@ window.KX = window.KX || {};
   // walks a tile in 267ms and runs in 133ms; this sits just under a run.
   var HOLD_MS = 180;      // below ~150 a deliberate single tap double-fires
   var REPEAT_MS = 110;
-
-  /**
-   * A. Walking onto a town already opens its panel, so this is confirm and
-   * re-open rather than enter: follow the panel's link if one is up,
-   * otherwise re-open the town underfoot, otherwise just look around.
-   */
-  function pressA() {
-    if (openTown && drawerBody) {
-      var go = drawerBody.querySelector('.drawer-go');
-      if (go) { go.click(); return; }
-    }
-    // 0, not the default 1 — match the 5x3 town footprint exactly
-    var t = townNear(sprite.x, sprite.y, 0);
-    if (t) { openDrawer(t); return; }
-    updateReadout(sprite.x, sprite.y);
-  }
 
   function bootConsole() {
     var gb = document.getElementById('gb-console');
@@ -1038,22 +1020,12 @@ window.KX = window.KX || {};
     }
 
     function dispatch(btn) {
-      var mv = btn.getAttribute('data-move');
-      if (mv) {
-        var p = mv.split(',');
-        stepBy(+p[0], +p[1]);
-        return;
-      }
-      var act = btn.getAttribute('data-act');
-      if (act === 'a') regionEl.classList.toggle('show-plates');
-      else if (act === 'b') closeDrawer();
-      else if (act === 'select') pressA();      // On a phone .town-plate is hidden and in tiles mode so is the marker,
-      // which leaves the towns unlabelled — start is the map screen.
-      else if (act === 'start') setMode(mode === 'tiles' ? 'ascii' : 'tiles');
+      var p = (btn.getAttribute('data-move') || '').split(',');
+      if (p.length === 2) stepBy(+p[0], +p[1]);
     }
 
     function btnFrom(e) {
-      return e.target && e.target.closest ? e.target.closest('.gb-key,.gb-round,.gb-pill') : null;
+      return e.target && e.target.closest ? e.target.closest('.gb-key') : null;
     }
 
     gb.addEventListener('pointerdown', function (e) {
@@ -1079,8 +1051,6 @@ window.KX = window.KX || {};
 
       dispatch(btn);
 
-      // only the d-pad repeats; holding A would follow its link over and over
-      if (!btn.getAttribute('data-move')) return;
       holdT = setTimeout(function () {
         holdT = null;
         repT = setInterval(function () { dispatch(btn); }, REPEAT_MS);
