@@ -894,6 +894,16 @@ body.no-crt .term::after { display: none; }
   cursor: pointer;
 }
 
+/* A 10px track with a 10px thumb is about a quarter of a usable touch
+   target, and dragging it vertically drifts into .term-main's scroll.
+   fractals.js picks a coarser detail on touch to stand in for it. */
+.is-touch .frac-detail-label,
+.is-touch #frac-detail { display: none; }
+
+/* paint() floors the render at 18 rows, so at the coarser touch detail the
+   art needs ~190px however short the frame is — 170px clips it. */
+.is-touch #frac-art { height: 200px; }
+
 /* --- range input --- */
 
 input[type="range"] {

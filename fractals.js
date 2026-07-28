@@ -394,6 +394,13 @@ window.KX = window.KX || {};
     detail = document.getElementById('frac-detail');
     if (!art || !detail) return;
 
+    // The slider is hidden on touch — a 10px track with a 10px thumb is a
+    // quarter of a usable target — so the value it would have set has to be
+    // chosen here instead. 8 gives a 10px font, which is legible in the
+    // 170px-tall frame a phone gets; the desktop default of 10 is not.
+    // paint() reads detail.value directly, so no input event is needed.
+    if (KX.touch) detail.value = 8;
+
     var frame = art.closest('.frac-frame');
     var nextBtn = frame && frame.querySelector('.frac-arrow.next');
     var prevBtn = frame && frame.querySelector('.frac-arrow.prev');

@@ -80,6 +80,8 @@ Dark/light via a `data-theme` attribute on `<html>`. All colours are CSS custom 
 
 Swaps are deliberately **synchronous and instant** — no cross-fade, no hover preview of the next item. `cols`/`rows` are derived from the frame's measured size and the current font size using `CHAR_W`/`CHAR_H`; **`CHAR_H` must match `#frac-art`'s `line-height` in `style.css`** or the art won't fill its box.
 
+The detail slider is hidden on touch (a 10px thumb is not a target), so `init()` picks a coarser value for it there instead — nothing else reads the slider, `paint()` just takes `detail.value` as it finds it. Note `paint()` floors the render at 18 rows whatever the frame height, which is why `#frac-art` gets a taller box under `.is-touch`: at the coarser detail those 18 rows no longer fit in 170px.
+
 ### Region map
 
 `region.js` builds a 96×34 tile grid: land/sea from value noise, mountains from ridge segments, forest scatter, then routes carved as orthogonal polylines and towns stamped last. `TOWNS` maps towns to sections — that array is the map's navigation. The sprite walks via uniform-cost search where routes are cheaper than open grass, so it prefers roads. Booted lazily on first visit to `#interactive`.
