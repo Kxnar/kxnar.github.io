@@ -34,10 +34,10 @@ window.KX = window.KX || {};
 
   var ROUTES = [
     { id: 'home',        path: '~',             label: 'home' },
+    { id: 'interactive', path: '~/interactive', label: 'interactive' },
     { id: 'education',   path: '~/education',   label: 'education' },
     { id: 'projects',    path: '~/projects',    label: 'projects' },
-    { id: 'blog',        path: '~/blog',        label: 'blog' },
-    { id: 'interactive', path: '~/interactive', label: 'interactive' }
+    { id: 'blog',        path: '~/blog',        label: 'blog' }
   ];
 
   function routeById(id) {
