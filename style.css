@@ -973,7 +973,6 @@ input[type="range"]::-moz-range-thumb {
 
 .inst-head {
   display: flex;
-  justify-content: space-between;
   align-items: baseline;
   gap: var(--sp-4);
   flex-wrap: wrap;
@@ -986,6 +985,62 @@ input[type="range"]::-moz-range-thumb {
 .inst-name:hover { color: var(--accent); }
 .inst-meta { color: var(--text-dim); font-size: var(--fs-sm); }
 .inst-role { color: var(--text-dim); font-size: var(--fs-base); }
+
+.institution-group {
+  margin-bottom: var(--sp-6);
+}
+.institution-group summary {
+  color: var(--text-bright);
+  font-weight: 600;
+  font-size: var(--fs-lg);
+  cursor: pointer;
+  user-select: none;
+  padding: var(--sp-4) 0;
+  list-style: none;
+}
+.institution-group summary::marker {
+  content: '';
+}
+.institution-group summary::before {
+  content: '>_ ';
+  color: var(--accent);
+  margin-right: var(--sp-2);
+}
+.institution-group summary:hover {
+  color: var(--accent);
+}
+
+.subject-list {
+  list-style: none;
+  padding: 0;
+  margin: var(--sp-4) 0;
+  color: var(--text-dim);
+  font-size: var(--fs-base);
+}
+.subject-list li {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
+}
+.subject-subject,
+.subject-grade {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: var(--fs-base);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: 2px;
+}
+.subject-subject {
+  flex: 1;
+  min-width: 0;
+}
+.subject-grade {
+  width: 4rem;
+  text-align: center;
+}
 
 /* opens the vault graph in the side pane — styled like the map's renderer
    switch, brackets and all */

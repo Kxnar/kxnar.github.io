@@ -70,7 +70,7 @@ window.KX = window.KX || {};
       desc: 'haskell — algebraic data types, recursion and structural induction, higher-order functions, laziness.'
     },
     {
-      code: 'phil.general',
+      code: 'phil.gen',
       name: 'general philosophy',
       term: "michaelmas '25",
       notes: 'general-philosophy',
@@ -115,11 +115,59 @@ window.KX = window.KX || {};
     },
 
     {
+      code: 'phil.turing',
+      name: 'alan turing on computability and intelligence',
+      term: "trinity '26",
+      notes: 'alan-turing-philosophy',
+      desc: "alan turing's 1936 and 1950 papers and various discussions around those topics"
+    },
+
+    {
+      code: 'cs.mc',
+      name: 'models of computation',
+      term: "michaelmas '26",
+      notes: 'models-of-computation',
+      desc: 'idk i havent done it yet it seems very familiar to alan turing on computability'
+    },
+
+    {
       code: 'phil.kr',
       name: 'knowledge & reality',
       term: "michaelmas '26",
       notes: 'knowledge-reality',
       desc: "idk i haven't done it yet"
+    },
+
+    {
+      code: 'cs.la',
+      name: 'linear algebra',
+      term: "michaelmas '26",
+      notes: 'linear-algebra',
+      desc: 'eigenvectors n shi'
+    },
+
+    {
+      code: 'cs.ads',
+      name: 'algorithms & data structures',
+      term: "hilary '27",
+      notes: 'algos-datastructs',
+      desc: "idk i haven't done it yet"
+    },
+
+    {
+          code: 'cs.cm',
+          name: 'continuous maths',
+          term: "hilary '27",
+          notes: 'continuous-maths',
+          desc: "idk i haven't done it yet"
+    },
+
+    {
+      code: 'cs.gds',
+      name: 'group design practical',
+      term: "trinity '27",
+      notes: 'group-practical',
+      desc: 'real programming'
     }
   ];
 
@@ -272,7 +320,7 @@ window.KX = window.KX || {};
     var bodyTotal = 0;
     items.forEach(function (it) { if (!it.charMode) bodyTotal += it.text.length; });
     // body fills in ~1.8s, with a floor so short sections don't crawl
-    var bodyCps = Math.max(450, bodyTotal / 1.8);
+    var bodyCps = Math.max(450, bodyTotal / 0.5);
 
     var caret = document.createElement('span');
     caret.className = 'type-caret';
@@ -400,11 +448,8 @@ window.KX = window.KX || {};
       KX.region.refresh();
     }
 
-    if (!typed[route.id]) {
-      typed[route.id] = true;
-      if (activeType) activeType.skip();
-      activeType = typeIn(document.getElementById(route.id));
-    }
+    if (activeType) activeType.skip();
+    activeType = typeIn(document.getElementById(route.id));
   }
 
   function setPrompt(route) {
@@ -522,11 +567,13 @@ window.KX = window.KX || {};
       // kept short — the transcript is only a few lines tall
       print([
         'ls  cd  cat  open  fractal  map  toggle  graph  theme  whoami  pwd  fastfetch  clear',
-        'cd &lt;section&gt; · cat about|contact|cv · open github|linkedin|cv|notes',
+        'cd &lt;section&gt',
+        'cat about|contact|cv',
+        'open github|linkedin|cv|notes',
         'fractal [next|prev|list|&lt;name&gt;] · map [town] · toggle [ascii|graphics]',
         'graph — obsidian vault graph · theme [dark|light]',
         'esc → normal mode: 1-5 switch section, arrows/hjkl drive the carousel',
-        'and the map, i or : returns to the prompt.'
+        'and the map, i or : returns to the prompt terminal.'
       ].join('\n'), 'dim');
     },
 
@@ -693,12 +740,13 @@ window.KX = window.KX || {};
       print(
         '<span data-no-type>' +
         '  ▄▄▄▄▄▄▄▄▄▄   </span>' + USER + '@' + HOST + '\n' +
-        '<span data-no-type>  █  &gt;_     █   </span>──────────────\n' +
+        '<span data-no-type>  █  &gt;_    █   </span>──────────────\n' +
         '<span data-no-type>  █        █   </span>host     christ church, oxford\n' +
         '<span data-no-type>  █        █   </span>course   comp sci ∧ philosophy\n' +
-        '<span data-no-type>  ▀▀▀▀▀▀▀▀▀▀   </span>shell    zsh 1.0\n' +
-        '<span data-no-type>                </span>theme    ' + t + '\n' +
-        '<span data-no-type>                </span>fractals ' + (KX.fractals ? KX.fractals.list().length : 0) + ' loaded',
+        '<span data-no-type>  ▀▀▀▀▀▀▀▀▀▀   </span>shell    zsh 5.9.2\n' +
+        '<span data-no-type>               </span>theme    ' + t + '\n' +
+        '<span data-no-type>               </span>theme    ' + t + '\n' +
+        '<span data-no-type>               </span>fractals ' + (KX.fractals ? KX.fractals.list().length : 0) + ' loaded',
         'dim', true);
     },
 
@@ -735,7 +783,7 @@ window.KX = window.KX || {};
   };
 
   // these stay in the bottom strip rather than spawning a side terminal
-  var INLINE_CMDS = { cd: true, clear: true };
+  var INLINE_CMDS = { cd: true, clear: true, toggle: true };
 
   function runCommand(raw) {
     var line = raw.trim();
@@ -1204,6 +1252,7 @@ window.KX = window.KX || {};
     navigate: navigate,
     print: print,
     run: runCommand,
-    routes: function () { return ROUTES.slice(); }
+    routes: function () { return ROUTES.slice(); },
+    sideClose: sideClose
   };
 })();

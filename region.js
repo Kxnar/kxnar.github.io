@@ -502,6 +502,7 @@ window.KX = window.KX || {};
 
   function walkTo(tx, ty, onArrive) {
     stopWalk();
+    closeDrawerIfAwayFromTown();
     var path = findPath(sprite.x, sprite.y, tx, ty);
     if (!path || path.length < 2) {
       if (onArrive) onArrive();
@@ -542,6 +543,7 @@ window.KX = window.KX || {};
 
     var town = townNear(nx, ny, 0);
     if (town) openDrawer(town);
+    else closeDrawerIfAwayFromTown();
   }
 
   function townNear(x, y, slack) {
@@ -620,12 +622,12 @@ window.KX = window.KX || {};
      Drawer
      ----------------------------------------------------- */
 
-  var drawer, drawerTitle, drawerBody, lastFocus = null;
+  var drawer, drawerTitle, drawerBody, lastFocus = null, openTown = null;
 
   var BLURB = {
-    home: 'first-year comp sci &amp; philosophy at christ church, oxford. fractals, logic, and ai interpretability — plus a shiny umbreon and an unreasonable attachment to the spurs.',
-    education: 'the papers i&rsquo;m taking for prelims, what each one covers, and my notes on them where i&rsquo;ve written any up.',
-    projects: 'fracta — a three.js 3d fractal renderer, my a-level project. shotlab — computer vision that critiques your shooting form.',
+    home: 'me!',
+    education: "notes on modules i've taken",
+    projects: 'various projects, not many so far but im trying',
     blog: 'not written yet. oxford first year in summary is first in the queue.',
     cv: 'my cv! work in progress.'
   };
@@ -633,6 +635,7 @@ window.KX = window.KX || {};
   function openDrawer(town) {
     if (!drawer) return;
     lastFocus = document.activeElement;
+    openTown = town;
 
     // an external town links out; the rest route to their section
     var go = town.url
@@ -674,7 +677,20 @@ window.KX = window.KX || {};
         b.setAttribute('aria-expanded', 'false');
       });
     }
+    openTown = null;
     if (lastFocus && lastFocus.focus) lastFocus.focus();
+
+    if (window.KX && window.KX.shell && window.KX.shell.sideClose) {
+      window.KX.shell.sideClose();
+    }
+  }
+
+  function closeDrawerIfAwayFromTown() {
+    if (!openTown) return;
+    var town = townNear(sprite.x, sprite.y, 0);
+    if (!town || town.id !== openTown.id) {
+      closeDrawer();
+    }
   }
 
   /* -----------------------------------------------------
