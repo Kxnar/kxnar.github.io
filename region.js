@@ -35,11 +35,18 @@ window.KX = window.KX || {};
      Towns — these are the navigation
      ----------------------------------------------------- */
 
+  /* A town's `id` is a section id and its panel links to `#id` — except
+     where it carries a `url`, which makes it an external target instead
+     (the cv opens as a pdf; there is no #cv route to land on). `build`
+     picks which building the pixel renderer stamps; it defaults to the
+     pokémon centre. */
   var TOWNS = [
     { id: 'home',      x: 13, y: 26, name: 'pallet town',   role: 'about me' },
     { id: 'projects',  x: 41, y: 17, name: 'forge town',  role: 'projects' },
     { id: 'education', x: 69, y: 24, name: 'oxford city', role: 'education' },
-    { id: 'blog',      x: 79, y: 7,  name: 'mt. silver', role: 'blog' }
+    { id: 'blog',      x: 79, y: 7,  name: 'mt. silver', role: 'blog' },
+    { id: 'cv',        x: 62, y: 15, name: 'league gate', role: 'cv',
+      url: 'cv.pdf', build: 'gate' }
   ];
 
   // route spines, as orthogonal waypoint chains between towns
@@ -475,13 +482,17 @@ window.KX = window.KX || {};
 
   var sprite, spriteEl, walkTimer = null, frame = 0;
 
+  // ms per tile. `frame` ticks once per step, so this is also the animation
+  // rate — much below ~40 and the pixel renderer's walk cycle is a blur.
+  var STEP_MS = 55;
+
   function placeSprite(x, y, dir) {
     sprite.x = x;
     sprite.y = y;
     if (dir) sprite.dir = dir;
     spriteEl.style.setProperty('--sx', x);
     spriteEl.style.setProperty('--sy', y);
-    // the walk cycle is the same two frames either way; only the look differs
+    // each renderer reads `frame` its own way; only the look differs
     active.sprite(spriteEl, sprite.dir, frame);
   }
 
@@ -513,7 +524,7 @@ window.KX = window.KX || {};
         stopWalk();
         if (onArrive) onArrive();
       }
-    }, 26);
+    }, STEP_MS);
   }
 
   /** One tile of manual movement; opens a panel if it lands on a town. */
@@ -615,18 +626,24 @@ window.KX = window.KX || {};
     home: 'first-year comp sci &amp; philosophy at christ church, oxford. fractals, logic, and ai interpretability — plus a shiny umbreon and an unreasonable attachment to the spurs.',
     education: 'the papers i&rsquo;m taking for prelims, what each one covers, and my notes on them where i&rsquo;ve written any up.',
     projects: 'fracta — a three.js 3d fractal renderer, my a-level project. shotlab — computer vision that critiques your shooting form.',
-    blog: 'not written yet. oxford first year in summary is first in the queue.'
+    blog: 'not written yet. oxford first year in summary is first in the queue.',
+    cv: 'my cv! work in progress.'
   };
 
   function openDrawer(town) {
     if (!drawer) return;
     lastFocus = document.activeElement;
 
+    // an external town links out; the rest route to their section
+    var go = town.url
+      ? '<a class="drawer-go" href="' + town.url + '" target="_blank" rel="noopener">' +
+          '[ open ' + town.url + ' ]</a>'
+      : '<a class="drawer-go" href="#' + town.id + '">[ open ~/' + town.id + ' ]</a>';
+
     drawerTitle.textContent = '~/' + town.id;
     drawerBody.innerHTML =
       '<p class="drawer-intro">' + town.name + ' · ' + town.role + '</p>' +
-      '<p>' + (BLURB[town.id] || '') + '</p>' +
-      '<a class="drawer-go" href="#' + town.id + '">[ open ~/' + town.id + ' ]</a>';
+      '<p>' + (BLURB[town.id] || '') + '</p>' + go;
 
     drawer.hidden = false;
     // Flush layout so the transition starts from the closed transform.
@@ -672,7 +689,7 @@ window.KX = window.KX || {};
   var LINE_H = 1.05;
 
   // below this the umbreon column isn't worth keeping
-  var UMBREON_MIN = 220;
+  var UMBREON_MIN = 600;
 
   /**
    * Size the map to fill its container, then give whatever width is left over
@@ -894,7 +911,11 @@ window.KX = window.KX || {};
     mode: function () { return mode || storedMode(); },
     /** Re-draw in the current palette — the theme toggle calls this. */
     repaint: repaint,
-    towns: function () { return TOWNS.map(function (t) { return { id: t.id, name: t.name, role: t.role }; }); },
+    towns: function () {
+      return TOWNS.map(function (t) {
+        return { id: t.id, name: t.name, role: t.role, url: t.url || null };
+      });
+    },
     /** Walk to a named town and open its panel — used by the `goto` command. */
     visit: function (id) {
       boot();

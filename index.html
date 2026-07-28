@@ -45,7 +45,7 @@
       <span class="term-bar-dots" aria-hidden="true">
         <span class="dot"></span><span class="dot"></span><span class="dot"></span>
       </span>
-      <span class="term-bar-title" id="term-title">kenar@kenar: ~/home</span>
+      <span class="term-bar-title" id="term-title">guest@kenar: ~/home</span>
       <span class="term-bar-meta" id="term-size" aria-hidden="true">96&times;32</span>
     </div>
 
@@ -62,8 +62,8 @@
         <div class="landing">
 
           <div class="bio">
-            <h1 class="name" data-type="char">Kenar Narayaka</h1>
-            <p class="location">&#9906; Loughborough / Oxford / Jakarta</p>
+            <h1 class="name" data-type="char">kenar narayaka</h1>
+            <p class="location">&#9906; loughborough / oxford / jakarta</p>
 
             <!--<div class="bio-lines">
               <p>- comp sci &and; phil @ christ church, university of oxford</p>
@@ -71,7 +71,10 @@
             </div>-->
 
             <p class="about-intro">
-              Hi! Currently studying Computer Science and Philosophy at
+                hi! currently studying computer science and philosophy at Christ Church, University of Oxford.
+            </p>
+            <p class="about-intro">
+
             </p>
 <!--
             <p>
@@ -88,10 +91,10 @@
               particularly, functional programming in haskell/ocaml has been very eye-opening.
             </p>
 -->
-            <p>
+            <!--<p>
               fractals are things i keep coming back to. in fact, i did my whole a-level cs project on them!
               since then i have abandoned said project but it is something i want to work on more when i have time.
-            </p>
+            </p>-->
 <!--
             <p>
               i used to be a massive disbeliever in generative ai, but as time passes and it gets better and better it's hard to ignore.
@@ -111,7 +114,7 @@
                   <h3 class="facts-title">quick facts:</h3>
                   <div class="fact-item">
                     <span class="fact-key">college</span>
-                    <span class="fact-val">1st year / freshman</span>
+                    <span class="fact-val">2nd year / sophomore</span>
                   </div>
                   <div class="fact-item">
                     <span class="fact-key">favourite pokemon</span>
@@ -122,8 +125,8 @@
                     <span class="fact-val">07/07/07 (7am)</span>
                   </div>
                   <div class="fact-item">
-                    <span class="fact-key">favourite nba team</span>
-                    <span class="fact-val">san antonio spurs</span>
+                    <span class="fact-key">favourite team</span>
+                    <span class="fact-val">san antonio spurs & leicester city</span>
                   </div>
                 </div>
 
@@ -214,18 +217,26 @@
            EDUCATION
            ========================================================= -->
       <section class="page" id="education" aria-label="education">
-        <header class="page-header">
-          <h1 class="page-title" data-type="char">education</h1>
-          <p class="page-sub">modules i've taken, and my notes on them.</p>
+        <!-- the graph button is a shortcut for `clear` then `graph` — the
+             brackets around its label come from CSS, as .map-mode-btn does -->
+        <header class="page-header with-action">
+          <div>
+            <h1 class="page-title" data-type="char">education</h1>
+            <p class="page-sub">modules i've taken, and my notes on them.</p>
+          </div>
+          <button id="notes-graph-btn" class="status-link graph-btn" type="button"
+                  aria-label="render the obsidian vault graph in the output pane"
+                  data-no-type>view obsidian graph</button>
         </header>
 
         <div class="institution">
           <div class="inst-head">
             <a href="https://www.chch.ox.ac.uk/" class="inst-name" target="_blank" rel="noopener">Christ Church, University of Oxford</a>
-            <span class="inst-meta">2025 &ndash;</span>
+            <span class="inst-meta">2025 &ndash; 2029</span>
           </div>
-          <div class="inst-role">b.a. computer science &amp; philosophy</div>
-          <div class="inst-role">b.a. computer science &amp; philosophy</div>
+          <div class="inst-role">BA Computer Science &amp; Philosophy - expected grad 2028</div>
+          <div class="inst-role">MCompPhil computer science &amp; Philosophy - expected grad 2029</div>
+          <div class="inst-role"></div>
         </div>
 
         <p class="section-title coursework-head">
@@ -391,7 +402,7 @@
 
     <form class="term-prompt" id="term-prompt" autocomplete="off">
       <label class="sr-only" for="cmd">terminal command</label>
-      <span class="ps1" id="ps1">kenar@kxnar:~/home$</span>
+      <span class="ps1" id="ps1">guest@kenar:~/home$</span>
       <input id="cmd" name="cmd" type="text" autocomplete="off" autocorrect="off"
              autocapitalize="off" spellcheck="false" aria-describedby="ps1">
     </form>
@@ -414,6 +425,7 @@
   <script defer src="fractals.js"></script>
   <script defer src="region-tiles.js"></script>
   <script defer src="region.js"></script>
+  <script defer src="notes-graph.js"></script>
   <script defer src="script.js"></script>
 </body>
 </html>
