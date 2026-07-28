@@ -420,8 +420,15 @@
       <section class="page map-page" id="interactive" aria-label="interactive region map">
         <header class="page-header">
           <h1 class="page-title" data-type="char">interactive</h1>
+          <!-- Two versions of the same instructions, as spans so the mode
+               button stays inline after either. The keys the laptop one names
+               don't exist on a phone, and region.js generates neither — this
+               is the only place the walk controls are described. The button
+               itself is shared: region.js writes its label, so there must
+               only ever be one of it. -->
           <p class="page-sub">
-            click a town, or walk there with esc + arrow keys / wasd / hjkl. press `i` then type `toggle` to switch interactive mode, or press:
+            <span class="desk-only">click a town, or walk there with esc + arrow keys / wasd / hjkl. press `i` then type `toggle` to switch interactive mode, or press:</span>
+            <span class="touch-only">tap a town, or any tile, and i'll walk there. to change how the map is drawn, press:</span>
             <button id="map-mode-toggle" class="status-link map-mode-btn" type="button"
                     aria-label="switch map renderer" aria-pressed="true"><span class="map-mode-label">ascii</span></button>
           </p>

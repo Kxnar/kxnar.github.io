@@ -797,6 +797,10 @@ window.KX = window.KX || {};
       b.style.setProperty('--x', t.x);
       b.style.setProperty('--y', t.y);
       b.setAttribute('aria-expanded', 'false');
+      // The name lives in .town-plate, which the mobile breakpoint hides —
+      // and in tiles mode .town-marker is hidden too, so without this the
+      // button has neither visible content nor an accessible name there.
+      b.setAttribute('aria-label', t.name + ' — ' + t.role);
       b.innerHTML =
         '<span class="town-marker" aria-hidden="true">◈</span>' +
         '<span class="town-plate">' +

@@ -92,6 +92,8 @@ The detail slider is hidden on touch (a 10px thumb is not a target), so `init()`
 
 `region.js` builds a 96×34 tile grid: land/sea from value noise, mountains from ridge segments, forest scatter, then routes carved as orthogonal polylines and towns stamped last. `TOWNS` maps towns to sections — that array is the map's navigation. The sprite walks via uniform-cost search where routes are cheaper than open grass, so it prefers roads. Booted lazily on first visit to `#interactive`.
 
+The walk controls are described **only** in `#interactive`'s `.page-sub` in `index.html` — `region.js` generates no instruction text at all — and that copy is split `.desk-only` / `.touch-only`, since the keys the laptop version names don't exist on a phone. The two variants are `<span>`s inside one `<p>` so the mode button stays inline after either; the button itself must not be duplicated, because `region.js` looks it up by id to write its label.
+
 A town is `{ id, x, y, name, role }` plus two optional fields. `url` makes it an **external** target: its panel links out (`cv.pdf`, new tab) instead of routing to `#id`, which matters because an id with no matching `ROUTES` entry would otherwise bounce to `home` via `currentId()`. `build` picks which building the pixel renderer stamps (`center`, the default, or `gate`). A new town needs a `BLURB` entry too, and `ARG_HINTS.map` in `script.js` is a hardcoded list that has to be kept in step.
 
 Town footprints are a 5×3 stamp minus the corners, so towns must clear each other by more than 5 in x and 3 in y. Placing one on an existing `ROUTES` waypoint is what makes it reachable — pathfinding needs a road to it.
