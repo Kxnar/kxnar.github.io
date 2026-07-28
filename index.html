@@ -2,7 +2,10 @@
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- viewport-fit=cover is what makes env(safe-area-inset-*) resolve to
+       anything but 0px on a notched phone. Deliberately no user-scalable=no
+       or maximum-scale — pinch-zoom stays available. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
   <title>kxnar</title>
   <meta name="description" content="kenar narayaka — comp sci &amp; philosophy at christ church, oxford. fractals, logic, ai interpretability.">
@@ -22,7 +25,8 @@
 
   <link rel="stylesheet" href="style.css">
 
-  <!-- Applied before first paint so a light-mode visitor never sees a dark flash.
+  <!-- Applied before first paint so a light-mode visitor never sees a dark flash,
+       and so the mobile layout is never briefly the desktop one.
        This has to stay inline in <head>; deferred scripts run too late. -->
   <script>
     (function () {
@@ -31,6 +35,19 @@
         if (saved !== 'light' && saved !== 'dark') saved = 'dark';
         document.documentElement.setAttribute('data-theme', saved);
       } catch (e) { /* private mode — the dark default in the markup stands */ }
+
+      // The single mobile gate: a real touch device, not a narrow window.
+      // Everything mobile-specific keys off .is-touch — CSS directly, JS via
+      // KX.touch — so the two can never disagree.
+      // ?touch / ?touch=0 forces it either way, because a desktop browser
+      // can't be talked into reporting a coarse pointer and the JS side
+      // reads the class once, at boot, so setting it later is too late.
+      var forced = /[?&]touch(=([^&]*))?/.exec(location.search);
+      var on = forced
+        ? forced[2] !== '0' && forced[2] !== 'false'
+        : !!(window.matchMedia &&
+             window.matchMedia('(hover: none) and (pointer: coarse)').matches);
+      if (on) document.documentElement.classList.add('is-touch');
     })();
   </script>
 </head>
@@ -73,12 +90,23 @@
             <p class="about-intro">
                 hi! currently studying computer science and philosophy at Christ Church, University of Oxford.
             </p>
-            <p class="about-intro">
-                welcome to my website. press `i` then type `help` in the command line to see what you can do.
+            <!-- Two versions of the same welcome. The command line doesn't
+                 exist without a keyboard, so telling a phone to press `i`
+                 would be pointing at a key it hasn't got. -->
+            <p class="about-intro desk-only">
+                welcome to my website. press `i` to use the command line then type `help` to see what you can do. press `esc` to enter normal mode.
             </p>
-
-            <p class="about-intro">
-                this website is mainly designed for laptop use. it may render VERY incorrectly on mobile.
+            <p class="about-intro desk-only">
+                check out the mobile version of the website too!
+            </p>
+            <p class="about-intro touch-only">
+                welcome to my website. tap a tab along the top to move around &mdash; the strip swipes sideways for the rest. the buttons at the bottom switch theme and open my links.
+            </p>
+            <p class="about-intro touch-only">
+                the interactive page is a region map: tap a town, or any tile, and i'll walk there.
+            </p>
+            <p class="about-intro touch-only">
+                check out the desktop version of the website too!
             </p>
 <!--
             <p>
@@ -398,8 +426,15 @@
       <section class="page map-page" id="interactive" aria-label="interactive region map">
         <header class="page-header">
           <h1 class="page-title" data-type="char">interactive</h1>
+          <!-- Two versions of the same instructions, as spans so the mode
+               button stays inline after either. The keys the laptop one names
+               don't exist on a phone, and region.js generates neither — this
+               is the only place the walk controls are described. The button
+               itself is shared: region.js writes its label, so there must
+               only ever be one of it. -->
           <p class="page-sub">
-            click a town, or walk there with esc + arrow keys / wasd / hjkl. press `i` then type `toggle` to switch interactive mode, or press:
+            <span class="desk-only">click a town, or walk there with esc + arrow keys / wasd / hjkl. press `i` then type `toggle` to switch interactive mode, or press:</span>
+            <span class="touch-only">tap a tile to walk there, or use the d-pad.</span>
             <button id="map-mode-toggle" class="status-link map-mode-btn" type="button"
                     aria-label="switch map renderer" aria-pressed="true"><span class="map-mode-label">ascii</span></button>
           </p>
@@ -418,6 +453,33 @@
             <nav class="region-towns" id="region-towns" aria-label="towns"></nav>
             <div class="region-readout" id="region-readout" aria-hidden="true"></div>
             <div class="region-flash" id="region-flash" aria-hidden="true"></div>
+          </div>
+        </div>
+
+        <!-- Game boy console. Shown only under .is-touch, where there are no
+             arrow keys; it duplicates the keydown handler in region.js and
+             the two coexist happily on a tablet with a keyboard attached.
+             data-no-type keeps the typing engine off it — it splits text
+             nodes into shown/hidden span pairs, which would tear the labels
+             out of their flex centring mid-reveal. -->
+        <div class="gb-console" id="gb-console" data-no-type>
+          <div class="gb-dpad" role="group" aria-label="move">
+            <button type="button" class="gb-key gb-up"    data-move="0,-1" aria-label="walk up"></button>
+            <button type="button" class="gb-key gb-left"  data-move="-1,0" aria-label="walk left"></button>
+            <span   class="gb-hub" aria-hidden="true"></span>
+            <button type="button" class="gb-key gb-right" data-move="1,0"  aria-label="walk right"></button>
+            <button type="button" class="gb-key gb-down"  data-move="0,1"  aria-label="walk down"></button>
+          </div>
+
+          <div class="gb-meta">
+            <button type="button" class="gb-pill" data-act="select" aria-label="select — change how the map is drawn">select</button>
+            <button type="button" class="gb-pill" data-act="start"  aria-label="start — show or hide town names">start</button>
+          </div>
+
+          <!-- B before A so tab order runs left to right, as they read -->
+          <div class="gb-ab" role="group" aria-label="actions">
+            <button type="button" class="gb-round gb-b" data-act="b" aria-label="B — close the panel">B</button>
+            <button type="button" class="gb-round gb-a" data-act="a" aria-label="A — enter the town you're standing on">A</button>
           </div>
         </div>
 

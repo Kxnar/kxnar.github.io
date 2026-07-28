@@ -15,6 +15,20 @@ window.KX = window.KX || {};
   var HOST = 'kenar';
 
   /* -----------------------------------------------------
+     Device
+     ----------------------------------------------------- */
+
+  /**
+   * True on a real touch device — a phone or tablet, not a narrow window.
+   * Read off the class the inline <head> script set rather than re-running
+   * matchMedia, so CSS and JS can never end up on different sides of the gate.
+   * Never re-evaluated: a device does not grow a mouse mid-session, and the
+   * layout it selects is baked into markup by the time anything reads this.
+   */
+  var TOUCH = document.documentElement.classList.contains('is-touch');
+  KX.touch = TOUCH;
+
+  /* -----------------------------------------------------
      Routes
      ----------------------------------------------------- */
 
@@ -427,7 +441,14 @@ window.KX = window.KX || {};
     var tabs = document.getElementById('term-tabs');
     if (tabs) {
       Array.prototype.forEach.call(tabs.children, function (a) {
-        a.classList.toggle('here', a.dataset.route === route.id);
+        var here = a.dataset.route === route.id;
+        a.classList.toggle('here', here);
+        // The strip hides its scrollbar, so on a narrow screen the active tab
+        // can sit off the end with nothing to say so. 'nearest' both ways
+        // keeps this from scrolling any ancestor.
+        if (here && a.scrollIntoView) {
+          a.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        }
       });
     }
 
@@ -744,9 +765,8 @@ window.KX = window.KX || {};
         '<span data-no-type>  █        █   </span>host     christ church, oxford\n' +
         '<span data-no-type>  █        █   </span>course   comp sci ∧ philosophy\n' +
         '<span data-no-type>  ▀▀▀▀▀▀▀▀▀▀   </span>shell    zsh 5.9.2\n' +
-        '<span data-no-type>               </span>theme    ' + t + '\n' +
-        '<span data-no-type>               </span>theme    ' + t + '\n' +
-        '<span data-no-type>               </span>fractals ' + (KX.fractals ? KX.fractals.list().length : 0) + ' loaded',
+        '<span data-no-type>               </span>kernel   Linux 7.1.4-arch1-1\n' +
+        '<span data-no-type>               </span>theme    ' + t + '\n',
         'dim', true);
     },
 
@@ -986,9 +1006,10 @@ window.KX = window.KX || {};
       }
     });
 
-    // clicking dead space in the terminal focuses the prompt, like a real one
+    // Clicking dead space in the terminal focuses the prompt, like a real one.
+    // Not on touch: there every stray tap would throw up the soft keyboard.
     var term = document.getElementById('term');
-    if (term && input) {
+    if (term && input && !TOUCH) {
       term.addEventListener('click', function (e) {
         if (e.target.closest('a, button, input, select, textarea, summary, label')) return;
         var sel = window.getSelection();
@@ -1013,7 +1034,7 @@ window.KX = window.KX || {};
   function initVimCursor() {
     var el = document.getElementById('vim-cursor');
     if (!el) return;
-    if (window.matchMedia('(hover: none), (pointer: coarse)').matches) return;
+    if (TOUCH) return;   // no pointer to follow
 
     var mx = 0, my = 0, queued = false, idleTimer = null;
     var cellW = 8, cellH = 15;

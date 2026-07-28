@@ -282,6 +282,44 @@ body.no-crt .term::after { display: none; }
 
 .term-bar-meta { flex: 0 0 auto; }
 
+/* --- device-specific copy --- */
+
+/* Paired variants of the same line, one per device. `revert` rather than a
+   literal display so these work on whatever element they're put on.
+   Both variants stay in the DOM and both are walked by the typing engine —
+   it only skips <pre> and [data-no-type], not display:none — which costs a
+   little wasted budget and nothing else. */
+.touch-only { display: none; }
+.is-touch .desk-only { display: none; }
+.is-touch .touch-only { display: revert; }
+
+/* --- touch targets ---
+
+   These are all sized for a mouse cursor: a few of them are under 20px
+   square. Grow the hit area with padding and a min size rather than with
+   font-size, so nothing about the terminal look changes — inline-flex is
+   what makes min-height actually apply to the inline ones. 44px is the
+   usual floor for a fingertip. */
+.is-touch .frac-arrow,
+.is-touch .drawer-close,
+.is-touch .side-close,
+.is-touch .status-link,
+.is-touch .map-mode-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* the status bar is a fixed-height strip; let its links fill it rather than
+   force it taller than the map can spare */
+.is-touch .status-link {
+  min-height: 32px;
+  padding: 0 var(--sp-2);
+}
+
 /* --- tab bar (the nav) --- */
 
 .term-tabs {
@@ -292,6 +330,12 @@ body.no-crt .term::after { display: none; }
   flex: 0 0 auto;
   overflow-x: auto;
   scrollbar-width: none;
+  /* The strip is wider than a phone and is meant to be swiped. Left to
+     itself a drag with any vertical component chains out to .term-main and
+     then to the document, so the whole page slews around under the thumb —
+     pin the gesture to this axis and stop it escaping. */
+  touch-action: pan-x;
+  overscroll-behavior-x: contain;
 }
 .term-tabs::-webkit-scrollbar { display: none; }
 
@@ -308,6 +352,11 @@ body.no-crt .term::after { display: none; }
   position: relative;
   /* instant, like a real tab strip — no fade */
   transition: color 0s, background 0s;
+  /* these are anchors: without this a long-press pops the iOS link preview
+     or drops selection handles, either of which then drags the page */
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .tab-num {
@@ -341,11 +390,22 @@ body.no-crt .term::after { display: none; }
   min-height: 0;
 }
 
+/* There are six nested scroll containers in here. overscroll-behavior stops
+   a flick that runs off the end of one from handing the rest of the gesture
+   to its parent and, eventually, to the document — which on a phone reads as
+   the page sliding around for no reason. */
 .term-main {
   flex: 1 1 auto;
   min-width: 0;
+  /* Under 980px .term-body stacks into a column, and a column flex item's
+     automatic minimum size lets this grow past its parent instead of
+     shrinking. That is invisible while the content scrolls, but the map page
+     is a fixed-height box in a clipped container: it overflowed .term and
+     pushed the game boy console off the bottom of a 667px phone. */
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
+  overscroll-behavior: contain;
   padding: var(--sp-8);
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
@@ -394,6 +454,7 @@ body.no-crt .term::after { display: none; }
 .side-log {
   flex: 1 1 auto;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: var(--sp-4);
   font-size: var(--fs-md);
   line-height: 1.65;
@@ -413,7 +474,11 @@ body.no-crt .term::after { display: none; }
    height, stage takes the rest, and region.js sizes the grid to fit. */
 .term-main.map-mode {
   padding: var(--sp-4);
+  /* clip rather than hidden for the same reason as .region — hidden makes
+     this a scroll container that an off-screen .town button can be scrolled
+     into. The hidden line is the pre-16 Safari fallback. */
   overflow: hidden;
+  overflow: clip;
 }
 .map-page.active {
   display: flex;
@@ -437,6 +502,7 @@ body.no-crt .term::after { display: none; }
      Everything except `cd` prints into the side pane instead. */
   max-height: 3.9rem;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 0 var(--sp-8);
   font-size: var(--fs-md);
   line-height: 1.65;
@@ -459,6 +525,19 @@ body.no-crt .term::after { display: none; }
 .log-line a { text-decoration: underline; text-underline-offset: 2px; }
 
 /* --- prompt --- */
+
+/* The command line is the site's navigation on a laptop and nothing at all
+   without a keyboard, so it goes on touch — along with the transcript it
+   prints into and the mode indicator, which only ever changes on the input's
+   focus/blur and would otherwise sit frozen on -- NORMAL --.
+   This has to be display:none, not visibility or an off-screen box: normal
+   mode and the click-to-focus handler both call input.focus(), and a
+   focusable-but-invisible input still throws up the soft keyboard.
+   Nothing else breaks — runCommand() is reachable without the input, which
+   is what keeps the education section's [view obsidian graph] button alive. */
+.is-touch .term-prompt,
+.is-touch .term-log,
+.is-touch .status-mode { display: none; }
 
 .term-prompt {
   flex: 0 0 auto;
@@ -506,6 +585,7 @@ body.no-crt .term::after { display: none; }
   color: var(--text-dim);
   letter-spacing: var(--track);
   overflow-x: auto;
+  overscroll-behavior-x: contain;
   scrollbar-width: none;
 }
 .term-status::-webkit-scrollbar { display: none; }
@@ -875,6 +955,16 @@ body.no-crt .term::after { display: none; }
   cursor: pointer;
 }
 
+/* A 10px track with a 10px thumb is about a quarter of a usable touch
+   target, and dragging it vertically drifts into .term-main's scroll.
+   fractals.js picks a coarser detail on touch to stand in for it. */
+.is-touch .frac-detail-label,
+.is-touch #frac-detail { display: none; }
+
+/* paint() floors the render at 18 rows, so at the coarser touch detail the
+   art needs ~190px however short the frame is — 170px clips it. */
+.is-touch #frac-art { height: 200px; }
+
 /* --- range input --- */
 
 input[type="range"] {
@@ -1227,13 +1317,58 @@ input[type="range"]::-moz-range-thumb {
   border: 1px solid var(--card-border);
   background: var(--card-bg);
   padding: var(--sp-4);
-  scrollbar-width: thin;
   /* hug the grid so the absolutely-positioned overlays stay anchored to the
      padding edge (= the grid origin) */
   width: max-content;
   max-width: 100%;
   flex: 0 0 auto;
+  /* The camera offset, in px, written by region.js's setCamera(). Zero here
+     and only ever non-zero on touch, which is what lets the layer transforms
+     below subtract it unconditionally. */
+  --cam-x: 0px;
+  --cam-y: 0px;
 }
+
+/* --- the game boy screen (touch only) ---
+   .region becomes a fixed 20x18-tile window and the world scrolls under it.
+   region.js sizes the box from the cell geometry it just handed out; see the
+   camera block in region.js for why the renderers need no camera of their own. */
+.is-touch .region {
+  box-sizing: content-box;
+  width: var(--cam-w, 320px);
+  height: var(--cam-h, 288px);
+  max-width: none;
+  /* clip, not hidden: hidden makes this a scroll container, and the .town
+     buttons are focusable <button>s sitting up to 1500px outside the window.
+     closeDrawer() restores focus to one, the browser scrolls it into view,
+     and that scroll offset then composes with the camera transform and
+     displaces the map for good. `clip` has no scroll position to set.
+     The hidden line is the fallback for pre-16 Safari. */
+  overflow: hidden;
+  overflow: clip;
+}
+
+/* The world layers. The three that already carry a translate3d only lose the
+   camera offset; the canvas and the grid get one, and only on touch — adding
+   a transform to the <pre> on desktop would promote it to its own layer and
+   flip the ascii text to grayscale antialiasing for nothing. */
+.is-touch .region-canvas,
+.is-touch .region-grid {
+  transform: translate3d(calc(-1 * var(--cam-x)), calc(-1 * var(--cam-y)), 0);
+}
+
+/* Mid-map the sprite holds still while the world moves, so the world has to
+   ease exactly as the sprite does (.region-sprite, below) or it hard-snaps a
+   whole tile every STEP_MS. At a clamped map edge it is the other way round.
+   Transitioning --cam-x itself would need @property, which Safari only got
+   in 16.4 — and its failure mode there is the silent hard jump this avoids. */
+.is-touch .region-canvas,
+.is-touch .region-grid,
+.is-touch .town { transition: color 0s, transform 0.06s linear; }
+
+/* the window is a fixed box now, so centre it in the height fit() leaves
+   rather than pinning it to the top with dead space underneath */
+.is-touch .region-stage { align-items: center; }
 
 .region-umbreon {
   flex: 0 0 auto;
@@ -1298,8 +1433,8 @@ input[type="range"]::-moz-range-thumb {
   align-items: center;
   justify-content: center;
   transform: translate3d(
-    calc(var(--sx, 0) * var(--cell-w, 7px)),
-    calc(var(--sy, 0) * var(--cell-h, 12px)),
+    calc(var(--sx, 0) * var(--cell-w, 7px) - var(--cam-x, 0px)),
+    calc(var(--sy, 0) * var(--cell-h, 12px) - var(--cam-y, 0px)),
     0
   );
   transition: transform 0.06s linear;
@@ -1336,8 +1471,8 @@ input[type="range"]::-moz-range-thumb {
   opacity: 0;
   transition: opacity 0.12s linear;
   transform: translate3d(
-    calc(var(--sx, 0) * var(--cell-w, 7px)),
-    calc(var(--sy, 0) * var(--cell-h, 12px)),
+    calc(var(--sx, 0) * var(--cell-w, 7px) - var(--cam-x, 0px)),
+    calc(var(--sy, 0) * var(--cell-h, 12px) - var(--cam-y, 0px)),
     0
   );
 }
@@ -1378,8 +1513,8 @@ input[type="range"]::-moz-range-thumb {
   top: 0;
   /* centre the marker on its tile, then shift left by half the plate width */
   transform: translate3d(
-    calc(var(--x) * var(--cell-w, 7px) + var(--cell-w, 7px) / 2),
-    calc(var(--y) * var(--cell-h, 12px)),
+    calc(var(--x) * var(--cell-w, 7px) + var(--cell-w, 7px) / 2 - var(--cam-x, 0px)),
+    calc(var(--y) * var(--cell-h, 12px) - var(--cam-y, 0px)),
     0
   ) translateX(-50%);
   display: flex;
@@ -1447,6 +1582,142 @@ input[type="range"]::-moz-range-thumb {
 }
 .region-readout .ro-key { color: var(--accent); }
 
+/* ===========================
+   GAME BOY CONSOLE  (touch only)
+
+   Drawn from the terminal tokens, not --px-*. Those exist because
+   region-tiles.js paints to a canvas and can't read a class, so it has to
+   read colours off :root, and they're theme-independent on purpose — grass
+   is green in both themes. This is site chrome, not map art: sourced from
+   --px-* it would be a bright plastic slab sitting under the --card-bg map
+   box and clashing with the light theme. Everything is square, as the rest
+   of the site is, except A and B — a circle is the strongest game boy
+   signifier there is and the site has no other circles, so it lands as
+   deliberate rather than sloppy.
+   =========================== */
+
+.gb-console { display: none; }
+
+.is-touch .gb-console {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  justify-items: center;
+  gap: var(--sp-4);
+  flex: 0 0 auto;
+  margin-top: var(--sp-4);
+  padding: var(--sp-4) var(--sp-3);
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  /* one number sizes the whole console */
+  --gb-key: clamp(38px, 12vw, 52px);
+}
+
+/* The gesture is ours, not the scroller's — without touch-action: none
+   Safari holds pointer events back ~300ms while it decides whether you meant
+   to scroll, then fires pointercancel mid-hold. Same reasoning as
+   .notes-graph-canvas. The rest stops the long-press callout and selection
+   magnifier; the tap highlight goes because .is-down replaces it. */
+.gb-console,
+.gb-console button {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.gb-dpad {
+  display: grid;
+  grid-template-columns: repeat(3, var(--gb-key));
+  grid-template-rows: repeat(3, var(--gb-key));
+}
+.gb-up { grid-area: 1 / 2; }
+.gb-left { grid-area: 2 / 1; }
+.gb-hub { grid-area: 2 / 2; }
+.gb-right { grid-area: 2 / 3; }
+.gb-down { grid-area: 3 / 2; }
+
+.gb-hub {
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.gb-key {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: var(--fs-md);
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0s, border-color 0s, background 0s;
+}
+/* the same four glyphs the ascii renderer gives the sprite */
+.gb-up::after { content: '\25B2'; }
+.gb-down::after { content: '\25BC'; }
+.gb-left::after { content: '\25C0'; }
+.gb-right::after { content: '\25B6'; }
+
+.gb-meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.gb-pill {
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-dim);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: var(--sp-2) var(--sp-4);
+  min-height: 30px;
+  transition: color 0s, border-color 0s, background 0s;
+}
+
+.gb-ab {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: flex-end;
+}
+.gb-round {
+  width: var(--gb-key);
+  height: var(--gb-key);
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  background: var(--bg-secondary);
+  color: var(--accent);
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0s, border-color 0s, background 0s;
+}
+/* A sits above B, as it does on the hardware */
+.gb-ab .gb-a { margin-bottom: var(--sp-4); }
+
+/* Applied by region.js rather than using :active, which is unreliable on
+   iOS. Without a pressed state the console feels dead, since the native tap
+   highlight is off. */
+.gb-console .is-down {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--bg);
+  transform: translateY(1px);
+}
+
+/* start toggles these back on — see bootConsole() in region.js */
+.is-touch .region.show-plates .town-plate { display: flex; }
+.is-touch .region.show-plates .town-name { font-size: 0.58rem; }
+.is-touch .region.show-plates .town-role { display: none; }
+
 /* --- drawer --- */
 
 .drawer {
@@ -1465,6 +1736,24 @@ input[type="range"]::-moz-range-thumb {
 }
 .drawer[hidden] { display: none; }
 .drawer.open { transform: translateX(0); }
+
+/* On touch a full-width side panel covers the map, the header and the
+   console, which reads as a page transition rather than a dialogue box.
+   Bring it up from the bottom and stop it short of the console: dismissing
+   with B and confirming with A only works if the buttons stay reachable.
+   region.js writes --gb-h from the console's measured height. */
+.is-touch .drawer {
+  top: auto;
+  left: 0;
+  right: 0;
+  bottom: var(--gb-h, 0px);
+  width: 100%;
+  max-height: 55%;
+  border-left: none;
+  border-top: 1px solid var(--accent);
+  transform: translateY(100%);
+}
+.is-touch .drawer.open { transform: translateY(0); }
 
 .drawer-head {
   display: flex;
@@ -1493,6 +1782,7 @@ input[type="range"]::-moz-range-thumb {
 .drawer-body {
   flex: 1;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: var(--sp-5);
   scrollbar-width: thin;
 }
@@ -1575,6 +1865,19 @@ input[type="range"]::-moz-range-thumb {
 @media (max-width: 680px) {
   body { padding: 0; }
 
+  /* The type scale was fixed at every width, which put body text at ~13px on
+     a phone — readable at desk distance, not at arm's length. Nudge the whole
+     scale rather than individual rules, so every relative size moves with it.
+     The headings are left alone; they were already large enough and growing
+     them costs vertical space the map needs. */
+  :root {
+    --fs-xs: 0.74rem;
+    --fs-sm: 0.80rem;
+    --fs-md: 0.84rem;
+    --fs-base: 0.90rem;
+    --fs-lg: 0.96rem;
+  }
+
   .term {
     height: 100vh;
     height: 100dvh;
@@ -1595,12 +1898,23 @@ input[type="range"]::-moz-range-thumb {
   .status-path,
   .status-pos { display: none; }
 
+  /* .term-status is the last element in .term, so the home-indicator inset
+     belongs here and nowhere else. Needs viewport-fit=cover on the meta tag
+     or env() is 0px and this is a no-op. */
+  .term-status {
+    padding-bottom: calc(var(--sp-2) + env(safe-area-inset-bottom, 0px));
+  }
+
   #frac-art { height: 170px; }
 
   /* fallback until region.js fit() sets an inline size */
   .region-grid { font-size: 5px; }
   .region { padding: var(--sp-2); }
+  /* .region-critter shares the grid-positioning contract with the trainer,
+     so it has to be re-anchored with him or the encounter sprite sits a
+     third of a tile off */
   .region-sprite,
+  .region-critter,
   .region-towns { top: var(--sp-2); left: var(--sp-2); }
   .region-readout { left: var(--sp-2); bottom: var(--sp-2); }
   .town-plate { display: none; }
@@ -1624,6 +1938,15 @@ input[type="range"]::-moz-range-thumb {
   #vim-cursor.blink { animation: none; }
   .drawer,
   .region-sprite { transition: none; }
+
+  /* The camera has to stop moving with the sprite, never independently of
+     it. These need the .is-touch prefix to match the specificity of the rule
+     that sets the transition, or they lose to it and fall back to the
+     blanket !important above — which zeroes the duration but leaves
+     transition-property set, and still fires transition events. */
+  .is-touch .region-canvas,
+  .is-touch .region-grid,
+  .is-touch .town { transition: none; }
 
   /* The typing reveal deliberately ignores this preference (it moves
      nothing), so its caret has to keep blinking — a frozen caret reads
