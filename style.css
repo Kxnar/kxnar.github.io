@@ -282,6 +282,17 @@ body.no-crt .term::after { display: none; }
 
 .term-bar-meta { flex: 0 0 auto; }
 
+/* --- device-specific copy --- */
+
+/* Paired variants of the same line, one per device. `revert` rather than a
+   literal display so these work on whatever element they're put on.
+   Both variants stay in the DOM and both are walked by the typing engine —
+   it only skips <pre> and [data-no-type], not display:none — which costs a
+   little wasted budget and nothing else. */
+.touch-only { display: none; }
+.is-touch .desk-only { display: none; }
+.is-touch .touch-only { display: revert; }
+
 /* --- tab bar (the nav) --- */
 
 .term-tabs {
@@ -477,6 +488,19 @@ body.no-crt .term::after { display: none; }
 .log-line a { text-decoration: underline; text-underline-offset: 2px; }
 
 /* --- prompt --- */
+
+/* The command line is the site's navigation on a laptop and nothing at all
+   without a keyboard, so it goes on touch — along with the transcript it
+   prints into and the mode indicator, which only ever changes on the input's
+   focus/blur and would otherwise sit frozen on -- NORMAL --.
+   This has to be display:none, not visibility or an off-screen box: normal
+   mode and the click-to-focus handler both call input.focus(), and a
+   focusable-but-invisible input still throws up the soft keyboard.
+   Nothing else breaks — runCommand() is reachable without the input, which
+   is what keeps the education section's [view obsidian graph] button alive. */
+.is-touch .term-prompt,
+.is-touch .term-log,
+.is-touch .status-mode { display: none; }
 
 .term-prompt {
   flex: 0 0 auto;

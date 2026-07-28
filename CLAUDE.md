@@ -60,6 +60,10 @@ A single fixed-position block (`#vim-cursor`) follows the pointer and snaps to t
 
 A real `<input>` at the bottom. Commands live in the `COMMANDS` map in `script.js`; argument completions in `ARG_HINTS`. History persists to `localStorage` (`kx-history`). `Esc` blurs the input into "normal mode", where `1`-`5` switch section, `i`/`:` return to the prompt, and arrows/`hjkl` drive the carousel and the region map — that split is why the carousel and map key handlers bail when `e.target` is an `INPUT`.
 
+The prompt, the `.term-log` it prints into and the `-- NORMAL --` indicator are all **hidden on touch** — there is no keyboard to drive them, and the indicator only ever changes on the input's focus/blur so it would sit frozen. That has to be `display: none` and not a visually-hidden box: `i`/`:` and the click-to-focus handler both call `input.focus()`, and a focusable-but-invisible input still raises the soft keyboard; under `display: none` the call is a silent no-op.
+
+`initPrompt` and `initNormalMode` still run and still bind — every DOM write is null-guarded, and `initNormalMode` carries the `hjkl`→arrow bridge the map and carousel depend on, so don't skip it. **`runCommand()` is not coupled to the input**: it is also reached through `KX.shell.run` and from `initNotesGraph`, which is what keeps the education section's `[view obsidian graph]` button working with no prompt on screen.
+
 ### Touch
 
 There is **one** mobile gate: `matchMedia('(hover: none) and (pointer: coarse)')`, evaluated by the same **inline `<head>` script** that applies the theme, and recorded as an `is-touch` class on `<html>`. It has to be inline and in the head for the same reason the theme does — a deferred script runs after first paint, and the mobile layout would flash as the desktop one.
@@ -69,6 +73,8 @@ Everything mobile-specific keys off that class: CSS reads it directly (`.is-touc
 The gate is deliberately **not** a width breakpoint — a narrow desktop window keeps the command line and the full terminal. The existing `@media (max-width: 680px)` block is a separate, genuinely width-driven concern and the two are not interchangeable.
 
 Because no desktop browser can be talked into reporting a coarse pointer, `?touch` on the URL forces the class on and `?touch=0` forces it off. That is the only way to exercise the JS branches outside a real device (adding the class from the console is too late — `KX.touch` has already been read).
+
+Copy that differs by device is written twice in the markup and switched by the `.desk-only` / `.touch-only` pair. Both variants stay in the DOM and **both are walked by the typing engine** — it skips `<pre>` and `[data-no-type]`, not `display: none` — which costs a little of the reveal budget and nothing else.
 
 ### Theming
 
