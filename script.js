@@ -11,8 +11,8 @@ window.KX = window.KX || {};
 (function () {
   'use strict';
 
-  var USER = 'kenar';
-  var HOST = 'kxnar';
+  var USER = 'guest';
+  var HOST = 'kenar';
 
   /* -----------------------------------------------------
      Routes
@@ -70,7 +70,7 @@ window.KX = window.KX || {};
       desc: 'haskell — algebraic data types, recursion and structural induction, higher-order functions, laziness.'
     },
     {
-      code: 'phil.general',
+      code: 'phil.gen',
       name: 'general philosophy',
       term: "michaelmas '25",
       notes: 'general-philosophy',
@@ -115,11 +115,59 @@ window.KX = window.KX || {};
     },
 
     {
+      code: 'phil.turing',
+      name: 'alan turing on computability and intelligence',
+      term: "trinity '26",
+      notes: 'alan-turing-philosophy',
+      desc: "alan turing's 1936 and 1950 papers and various discussions around those topics"
+    },
+
+    {
+      code: 'cs.mc',
+      name: 'models of computation',
+      term: "michaelmas '26",
+      notes: 'models-of-computation',
+      desc: 'idk i havent done it yet it seems very familiar to alan turing on computability'
+    },
+
+    {
       code: 'phil.kr',
       name: 'knowledge & reality',
       term: "michaelmas '26",
       notes: 'knowledge-reality',
       desc: "idk i haven't done it yet"
+    },
+
+    {
+      code: 'cs.la',
+      name: 'linear algebra',
+      term: "michaelmas '26",
+      notes: 'linear-algebra',
+      desc: 'eigenvectors n shi'
+    },
+
+    {
+      code: 'cs.ads',
+      name: 'algorithms & data structures',
+      term: "hilary '27",
+      notes: 'algos-datastructs',
+      desc: "idk i haven't done it yet"
+    },
+
+    {
+          code: 'cs.cm',
+          name: 'continuous maths',
+          term: "hilary '27",
+          notes: 'continuous-maths',
+          desc: "idk i haven't done it yet"
+    },
+
+    {
+      code: 'cs.gds',
+      name: 'group design practical',
+      term: "trinity '27",
+      notes: 'group-practical',
+      desc: 'real programming'
     }
   ];
 
@@ -272,7 +320,7 @@ window.KX = window.KX || {};
     var bodyTotal = 0;
     items.forEach(function (it) { if (!it.charMode) bodyTotal += it.text.length; });
     // body fills in ~1.8s, with a floor so short sections don't crawl
-    var bodyCps = Math.max(450, bodyTotal / 1.8);
+    var bodyCps = Math.max(450, bodyTotal / 0.5);
 
     var caret = document.createElement('span');
     caret.className = 'type-caret';
@@ -400,11 +448,8 @@ window.KX = window.KX || {};
       KX.region.refresh();
     }
 
-    if (!typed[route.id]) {
-      typed[route.id] = true;
-      if (activeType) activeType.skip();
-      activeType = typeIn(document.getElementById(route.id));
-    }
+    if (activeType) activeType.skip();
+    activeType = typeIn(document.getElementById(route.id));
   }
 
   function setPrompt(route) {
@@ -521,11 +566,14 @@ window.KX = window.KX || {};
     help: function () {
       // kept short — the transcript is only a few lines tall
       print([
-        'ls  cd  cat  open  fractal  map  theme  whoami  pwd  fastfetch  clear',
-        'cd &lt;section&gt; · cat about|contact|cv · open github|linkedin|cv|notes',
-        'fractal [next|prev|list|&lt;name&gt;] · map [town] · theme [dark|light]',
+        'ls  cd  cat  open  fractal  map  toggle  graph  theme  whoami  pwd  fastfetch  clear',
+        'cd &lt;section&gt',
+        'cat about|contact|cv',
+        'open github|linkedin|cv|notes',
+        'fractal [next|prev|list|&lt;name&gt;] · map [town] · toggle [ascii|graphics]',
+        'graph — obsidian vault graph · theme [dark|light]',
         'esc → normal mode: 1-5 switch section, arrows/hjkl drive the carousel',
-        'and the map, i or : returns to the prompt.'
+        'and the map, i or : returns to the prompt terminal.'
       ].join('\n'), 'dim');
     },
 
@@ -619,6 +667,55 @@ window.KX = window.KX || {};
       }
     },
 
+    /* Draws the obsidian vault as a graph in the side pane.
+       Deliberately NOT in INLINE_CMDS: runCommand only sets outTarget to
+       'side' for non-inline commands, and that is the only thing that makes
+       print() open the side terminal. */
+    graph: function () {
+      if (!KX.notesGraph) { print('graph: renderer unavailable', null); return; }
+      if (!NOTES_LIVE) {
+        print('graph: notes vault not published yet &mdash; nothing to draw.', 'dim');
+        return;
+      }
+
+      // print() hands back the .log-line it made; the graph mounts inside it.
+      // `instant` throughout, so the typing engine never rewrites the subtree.
+      var line = print('<div class="notes-graph" data-no-type></div>', null, true);
+      if (!line) return;
+
+      KX.notesGraph.mount(line.firstChild, {
+        base: NOTES_BASE,
+        onReady: function (n, e) {
+          print(n + ' notes &middot; ' + e + ' links', 'ok', true);
+        },
+        onError: function (msg) { print('graph: ' + esc(msg), null, true); }
+      });
+    },
+
+    // switches which renderer draws the region map. `KX.region.setMode` is
+    // the region's own mode, not the local setMode() that drives the vim
+    // statusline — same name, different thing.
+    toggle: function (args) {
+      navigate('interactive');
+      if (!KX.region) { print('toggle: map unavailable', null); return; }
+
+      var want = (args[0] || '').toLowerCase();
+      var next;
+      if (want === 'ascii' || want === 'a') next = 'ascii';
+      else if (want === 'graphics' || want === 'g' || want === 'tiles') next = 'tiles';
+      else if (want) {
+        print('toggle: expected ascii or graphics', null);
+        return;
+      } else {
+        next = KX.region.mode() === 'tiles' ? 'ascii' : 'tiles';
+      }
+
+      KX.region.setMode(next);
+      // report what actually happened: setMode falls back to ascii when the
+      // pixel renderer didn't load
+      print('map → ' + (KX.region.mode() === 'tiles' ? 'graphics' : 'ascii'), 'ok');
+    },
+
     theme: function (args) {
       var want = (args[0] || '').toLowerCase();
       var html = document.documentElement;
@@ -638,17 +735,18 @@ window.KX = window.KX || {};
       print((routeById(currentId()) || ROUTES[0]).path, null);
     },
 
-    neofetch: function () {
+    fastfetch: function () {
       var t = document.documentElement.getAttribute('data-theme');
       print(
         '<span data-no-type>' +
         '  ▄▄▄▄▄▄▄▄▄▄   </span>' + USER + '@' + HOST + '\n' +
-        '<span data-no-type>  █  &gt;_     █   </span>──────────────\n' +
+        '<span data-no-type>  █  &gt;_    █   </span>──────────────\n' +
         '<span data-no-type>  █        █   </span>host     christ church, oxford\n' +
         '<span data-no-type>  █        █   </span>course   comp sci ∧ philosophy\n' +
-        '<span data-no-type>  ▀▀▀▀▀▀▀▀▀▀   </span>shell    kxsh 1.0\n' +
-        '<span data-no-type>                </span>theme    ' + t + '\n' +
-        '<span data-no-type>                </span>fractals ' + (KX.fractals ? KX.fractals.list().length : 0) + ' loaded',
+        '<span data-no-type>  ▀▀▀▀▀▀▀▀▀▀   </span>shell    zsh 5.9.2\n' +
+        '<span data-no-type>               </span>theme    ' + t + '\n' +
+        '<span data-no-type>               </span>theme    ' + t + '\n' +
+        '<span data-no-type>               </span>fractals ' + (KX.fractals ? KX.fractals.list().length : 0) + ' loaded',
         'dim', true);
     },
 
@@ -679,12 +777,13 @@ window.KX = window.KX || {};
     cat: ['about', 'contact', 'cv'],
     open: Object.keys(LINKS),
     theme: ['dark', 'light'],
-    map: ['home', 'education', 'projects', 'blog'],
+    map: ['home', 'education', 'projects', 'blog', 'cv'],
+    toggle: ['ascii', 'graphics'],
     fractal: ['next', 'prev', 'list']
   };
 
   // these stay in the bottom strip rather than spawning a side terminal
-  var INLINE_CMDS = { cd: true, clear: true };
+  var INLINE_CMDS = { cd: true, clear: true, toggle: true };
 
   function runCommand(raw) {
     var line = raw.trim();
@@ -701,7 +800,7 @@ window.KX = window.KX || {};
     if (COMMANDS[cmd]) {
       COMMANDS[cmd](args);
     } else {
-      print('kxsh: command not found: ' + esc(cmd) + ' — try `help`', null);
+      print('zsh: command not found: ' + esc(cmd) + ' — try `help`', null);
     }
 
     outTarget = 'log';
@@ -1008,12 +1107,30 @@ window.KX = window.KX || {};
     document.documentElement.setAttribute('data-theme', next);
     try { localStorage.setItem('theme', next); } catch (e) { /* private mode */ }
     updateThemeLabel();
+    // the map's --px-* palette is theme-independent, but the graph is drawn
+    // from the terminal tokens, so it has to follow
+    if (KX.notesGraph) KX.notesGraph.repaint();
   }
 
   function updateThemeLabel() {
     var label = document.querySelector('#theme-toggle .theme-label');
     if (!label) return;
     label.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  }
+
+  /**
+   * The graph button is a shortcut for two real commands, which is both the
+   * site's conceit and the only sane order: `clear` runs sideClose(), which
+   * wipes the side pane — so it has to happen *before* the graph mounts.
+   * (The `clear` echo is itself cleared, so the transcript shows just `graph`.)
+   */
+  function initNotesGraph() {
+    var btn = document.getElementById('notes-graph-btn');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      runCommand('clear');
+      runCommand('graph');
+    });
   }
 
   function initTheme() {
@@ -1082,6 +1199,9 @@ window.KX = window.KX || {};
     updateSize();
     if (KX.fractals) KX.fractals.refresh();
     if (KX.region) KX.region.fit();
+    // the graph lives *in* the side pane, so opening or closing it changes
+    // the canvas's own box, not just the main column's
+    if (KX.notesGraph) KX.notesGraph.fit();
   }
 
   function sideOpen() {
@@ -1107,6 +1227,7 @@ window.KX = window.KX || {};
   function boot() {
     initTabs();
     renderModules();
+    initNotesGraph();
     initTheme();
     initSide();
     initSize();
@@ -1131,6 +1252,7 @@ window.KX = window.KX || {};
     navigate: navigate,
     print: print,
     run: runCommand,
-    routes: function () { return ROUTES.slice(); }
+    routes: function () { return ROUTES.slice(); },
+    sideClose: sideClose
   };
 })();

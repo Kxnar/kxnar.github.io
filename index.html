@@ -45,7 +45,7 @@
       <span class="term-bar-dots" aria-hidden="true">
         <span class="dot"></span><span class="dot"></span><span class="dot"></span>
       </span>
-      <span class="term-bar-title" id="term-title">kenar@kenar: ~/home</span>
+      <span class="term-bar-title" id="term-title">guest@kenar: ~/home</span>
       <span class="term-bar-meta" id="term-size" aria-hidden="true">96&times;32</span>
     </div>
 
@@ -62,8 +62,8 @@
         <div class="landing">
 
           <div class="bio">
-            <h1 class="name" data-type="char">Kenar Narayaka</h1>
-            <p class="location">&#9906; Loughborough / Oxford / Jakarta</p>
+            <h1 class="name" data-type="char">kenar narayaka</h1>
+            <p class="location">&#9906; loughborough / oxford / jakarta</p>
 
             <!--<div class="bio-lines">
               <p>- comp sci &and; phil @ christ church, university of oxford</p>
@@ -71,7 +71,14 @@
             </div>-->
 
             <p class="about-intro">
-              Hi! Currently studying Computer Science and Philosophy at
+                hi! currently studying computer science and philosophy at Christ Church, University of Oxford.
+            </p>
+            <p class="about-intro">
+                welcome to my website. press `i` then type `help` in the command line to see what you can do.
+            </p>
+
+            <p class="about-intro">
+                this website is mainly designed for laptop use. it may render VERY incorrectly on mobile.
             </p>
 <!--
             <p>
@@ -88,10 +95,10 @@
               particularly, functional programming in haskell/ocaml has been very eye-opening.
             </p>
 -->
-            <p>
+            <!--<p>
               fractals are things i keep coming back to. in fact, i did my whole a-level cs project on them!
               since then i have abandoned said project but it is something i want to work on more when i have time.
-            </p>
+            </p>-->
 <!--
             <p>
               i used to be a massive disbeliever in generative ai, but as time passes and it gets better and better it's hard to ignore.
@@ -111,7 +118,7 @@
                   <h3 class="facts-title">quick facts:</h3>
                   <div class="fact-item">
                     <span class="fact-key">college</span>
-                    <span class="fact-val">1st year / freshman</span>
+                    <span class="fact-val">2nd year / sophomore</span>
                   </div>
                   <div class="fact-item">
                     <span class="fact-key">favourite pokemon</span>
@@ -122,16 +129,16 @@
                     <span class="fact-val">07/07/07 (7am)</span>
                   </div>
                   <div class="fact-item">
-                    <span class="fact-key">favourite nba team</span>
-                    <span class="fact-val">san antonio spurs</span>
+                    <span class="fact-key">favourite team</span>
+                    <span class="fact-val">san antonio spurs & leicester city</span>
                   </div>
                 </div>
 
                 <div class="favourites">
                   <h3 class="facts-title">also reading:</h3>
                   <ul class="fav-list">
-                    <li>- lord of the mysteries</li>
-                    <li>- one piece</li>
+                    <li>- <a href="https://myanimelist.net/animelist/Kxnar" class="ext-link" target="_blank" rel="noopener">check out my anime list</a></li>
+                    <li>- <a href="https://myanimelist.net/mangalist/Kxnar" class="ext-link" target="_blank" rel="noopener">check out my manga list</a></li>
                   </ul>
                 </div>
 
@@ -214,19 +221,65 @@
            EDUCATION
            ========================================================= -->
       <section class="page" id="education" aria-label="education">
-        <header class="page-header">
-          <h1 class="page-title" data-type="char">education</h1>
-          <p class="page-sub">modules i've taken, and my notes on them.</p>
+        <!-- the graph button is a shortcut for `clear` then `graph` — the
+             brackets around its label come from CSS, as .map-mode-btn does -->
+        <header class="page-header with-action">
+          <div>
+            <h1 class="page-title" data-type="char">education</h1>
+            <p class="page-sub">uni modules i've taken, and my notes on them.</p>
+          </div>
+          <button id="notes-graph-btn" class="status-link graph-btn" type="button"
+                  aria-label="render the obsidian vault graph in the output pane"
+                  data-no-type>view obsidian graph</button>
         </header>
 
         <div class="institution">
           <div class="inst-head">
             <a href="https://www.chch.ox.ac.uk/" class="inst-name" target="_blank" rel="noopener">Christ Church, University of Oxford</a>
-            <span class="inst-meta">2025 &ndash;</span>
+            <span class="inst-meta">2025 &ndash; 2029</span>
           </div>
-          <div class="inst-role">b.a. computer science &amp; philosophy</div>
-          <div class="inst-role">b.a. computer science &amp; philosophy</div>
+          <div class="inst-role">BA Computer Science &amp; Philosophy - expected grad 2028</div>
+          <div class="inst-role">MCompPhil Computer Science &amp; Philosophy - expected grad 2029</div>
+          <div class="inst-role"></div>
         </div>
+
+        <details class="institution-group">
+          <summary>before uni</summary>
+
+          <div class="institution">
+            <div class="inst-head">
+              <a href="https://www.loucoll.ac.uk/courses/a-levels" class="inst-name" target="_blank" rel="noopener">Loughborough College</a>
+              <span class="inst-meta">2023 &ndash; 2025</span>
+            </div>
+            <ul class="subject-list">
+              <li><div class="subject-subject">OCR A-Level Computer Science</div> - <div class="subject-grade">A*</div></li>
+              <li><div class="subject-subject">Edexcel A-Level Mathematics</div> - <div class="subject-grade">A</div></li>
+              <li><div class="subject-subject">Edexcel A-Level Further Mathematics</div> - <div class="subject-grade">A</div></li>
+              <li><div class="subject-subject">AQA A-Level Chemistry</div> - <div class="subject-grade">B</div></li>
+            </ul>
+
+          </div>
+
+          <div class="institution">
+            <div class="inst-head">
+              <a href="https://www.woodbrookvale.leics.sch.uk/" class="inst-name" target="_blank" rel="noopener">Woodbrook Vale School</a>
+              <span class="inst-meta">2018 &ndash; 2023</span>
+            </div>
+            <ul class="subject-list">
+              <li><div class="subject-subject">GCSE Mathematics</div> - <div class="subject-grade">9</div></li>
+              <li><div class="subject-subject">FSMQ Additional Mathematics</div> - <div class="subject-grade">A</div></li>
+              <li><div class="subject-subject">GCSE Statistics</div> - <div class="subject-grade">9</div></li>
+              <li><div class="subject-subject">GCSE English Language</div> - <div class="subject-grade">9</div></li>
+              <li><div class="subject-subject">GCSE English Literature</div> - <div class="subject-grade">9</div></li>
+              <li><div class="subject-subject">GCSE Physics</div> - <div class="subject-grade">9</div></li>
+              <li><div class="subject-subject">GCSE Chemistry</div> - <div class="subject-grade">9</div></li>
+              <li><div class="subject-subject">GCSE Biology</div> - <div class="subject-grade">9</div></li>
+              <li><div class="subject-subject">GCSE History</div> - <div class="subject-grade">9</div></li>
+              <li><div class="subject-subject">GCSE Computer Science</div> - <div class="subject-grade">9</div></li>
+              <li><div class="subject-subject">GCSE Spanish</div> - <div class="subject-grade">8</div></li>
+            </ul>
+          </div>
+        </details>
 
         <p class="section-title coursework-head">
           <span>coursework</span>
@@ -290,6 +343,8 @@
             </div>
           </div>
 
+
+
         </div>
       </section>
 
@@ -344,7 +399,7 @@
         <header class="page-header">
           <h1 class="page-title" data-type="char">interactive</h1>
           <p class="page-sub">
-            click a town, or walk there with the arrow keys / wasd.
+            click a town, or walk there with esc + arrow keys / wasd / hjkl. press `i` then type `toggle` to switch interactive mode, or press:
             <button id="map-mode-toggle" class="status-link map-mode-btn" type="button"
                     aria-label="switch map renderer" aria-pressed="true"><span class="map-mode-label">ascii</span></button>
           </p>
@@ -391,7 +446,7 @@
 
     <form class="term-prompt" id="term-prompt" autocomplete="off">
       <label class="sr-only" for="cmd">terminal command</label>
-      <span class="ps1" id="ps1">kenar@kxnar:~/home$</span>
+      <span class="ps1" id="ps1">guest@kenar:~/home$</span>
       <input id="cmd" name="cmd" type="text" autocomplete="off" autocorrect="off"
              autocapitalize="off" spellcheck="false" aria-describedby="ps1">
     </form>
@@ -414,6 +469,7 @@
   <script defer src="fractals.js"></script>
   <script defer src="region-tiles.js"></script>
   <script defer src="region.js"></script>
+  <script defer src="notes-graph.js"></script>
   <script defer src="script.js"></script>
 </body>
 </html>

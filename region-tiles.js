@@ -13,7 +13,8 @@ window.KX = window.KX || {};
   'use strict';
 
   var TILE = 8;          // source pixels per map tile (classic GB cell)
-  var SPRITE_H = 12;     // the trainer is a tile and a half tall
+  var SPRITE_W = 10;     // the trainer overhangs his tile a little either side
+  var SPRITE_H = 14;     // ...and stands a bit under two tiles tall
   var MIN_CELL = 3;
   var MAX_CELL = 24;
 
@@ -21,15 +22,31 @@ window.KX = window.KX || {};
      Palette
 
      Colours come from --px-* on :root rather than literals,
-     so light and dark each get their own palette and a
-     theme switch is just a repaint.
+     so the whole look is retuned from the stylesheet. Unlike
+     the rest of the site this palette is theme-independent:
+     grass is green and ash's cap is red in both themes, so
+     there is no [data-theme="light"] override to match.
      ----------------------------------------------------- */
 
   var PX_KEYS = [
-    'sea', 'sea-lit', 'sand', 'sand-lit', 'grass', 'grass-lit',
-    'tall', 'tall-lit', 'tree', 'tree-lit', 'trunk', 'rock', 'rock-lit',
-    'path', 'path-lit', 'roof', 'roof-alt', 'wall', 'door', 'cave',
-    'ink', 'skin', 'cloth'
+    /* terrain */
+    'grass', 'grass-lit', 'grass-dk', 'bloom', 'bloom-alt',
+    'tall', 'tall-lit', 'tall-dk',
+    'tree', 'tree-lit', 'tree-dk', 'trunk',
+    'sea', 'sea-lit', 'foam', 'sand', 'sand-lit',
+    'rock', 'rock-lit', 'rock-dk', 'path', 'path-lit', 'cave',
+    /* buildings */
+    'roof', 'roof-lit', 'roof-dk',
+    'roof-alt', 'roof-alt-lit', 'roof-alt-dk',
+    'wall', 'wall-dk', 'glass', 'door', 'emblem',
+    /* the trainer */
+    'cap', 'cap-dk', 'cap-white', 'cap-logo', 'hair', 'eye',
+    'skin', 'skin-dk', 'jacket', 'jacket-dk', 'sleeve',
+    'glove', 'denim', 'shoe',
+    /* wild sprites */
+    'mon-umbreon', 'mon-umbreon-lit', 'mon-zubat', 'mon-zubat-lit',
+    'mon-oddish', 'mon-oddish-lit', 'mon-rattata', 'mon-rattata-lit',
+    'mon-ponyta', 'mon-ponyta-lit', 'mon-gastly', 'mon-gastly-lit'
   ];
 
   function readPalette() {
@@ -37,6 +54,7 @@ window.KX = window.KX || {};
     var p = {};
     for (var i = 0; i < PX_KEYS.length; i++) {
       var k = PX_KEYS[i];
+      // magenta is the tell that a key here has no --px-* to match it
       p[k] = (cs.getPropertyValue('--px-' + k) || '').trim() || '#ff00ff';
     }
     return p;
@@ -50,36 +68,49 @@ window.KX = window.KX || {};
      ----------------------------------------------------- */
 
   var CH = {
-    s: 'sea',   l: 'sea-lit',
+    s: 'sea',   l: 'sea-lit',   F: 'foam',
     a: 'sand',  A: 'sand-lit',
-    g: 'grass', G: 'grass-lit',
-    t: 'tall',  T: 'tall-lit',
-    c: 'tree',  C: 'tree-lit',  k: 'trunk',
-    r: 'rock',  R: 'rock-lit',
+    g: 'grass', G: 'grass-lit', D: 'grass-dk',
+    b: 'bloom', B: 'bloom-alt',
+    t: 'tall',  T: 'tall-lit',  y: 'tall-dk',
+    c: 'tree',  C: 'tree-lit',  v: 'tree-dk',  k: 'trunk',
+    r: 'rock',  R: 'rock-lit',  x: 'rock-dk',
     p: 'path',  P: 'path-lit',
-    d: 'cave',
-    w: 'wall',  o: 'door',
-    f: 'roof',  F: 'roof-alt'
+    n: 'cave',
+    w: 'wall',  W: 'wall-dk',   o: 'door',     q: 'glass',  e: 'emblem',
+    f: 'roof',  H: 'roof-lit',  h: 'roof-dk'
   };
+
+  /** Same art, blue: the league gate reuses the pokémon-centre stamps. */
+  function remap(base, over) {
+    var out = {}, k;
+    for (k in base) if (Object.prototype.hasOwnProperty.call(base, k)) out[k] = base[k];
+    for (k in over) if (Object.prototype.hasOwnProperty.call(over, k)) out[k] = over[k];
+    return out;
+  }
+
+  var CH_GATE = remap(CH, {
+    f: 'roof-alt', H: 'roof-alt-lit', h: 'roof-alt-dk'
+  });
 
   var ART = {
     sea: [
       ['ssssssss',
        'ssllssss',
        'ssssssss',
-       'ssssssss',
        'ssssslls',
        'ssssssss',
+       'llssssss',
        'ssssssss',
-       'llssssss'],
+       'sssslsss'],
       ['ssssssss',
+       'sllsssss',
+       'ssssssss',
+       'ssssllss',
        'ssssssss',
        'sllsssss',
        'ssssssss',
-       'ssssssss',
-       'ssssslls',
-       'ssssssss',
-       'ssssssss']
+       'sslsssss']
     ],
 
     sand: [
@@ -104,228 +135,308 @@ window.KX = window.KX || {};
     grass: [
       ['gggggggg',
        'ggGggggg',
-       'gggggggg',
+       'gggggDgg',
        'ggggggGg',
        'gGgggggg',
-       'gggggggg',
+       'ggDggggg',
        'ggggGggg',
        'gggggggg'],
       ['gggggggg',
        'ggggggGg',
-       'gGgggggg',
+       'gGggDggg',
        'gggggggg',
        'gggGgggg',
-       'gggggggg',
-       'ggggggGg',
+       'ggggggDg',
+       'ggGgggGg',
        'gGgggggg']
+    ],
+
+    // the flower clusters that break up a route — picked by hash2, so only
+    // a minority of grass tiles get one
+    bloom: [
+      ['gggggggg',
+       'ggbgbggg',
+       'gggbgggg',
+       'ggbgbggg',
+       'gggggggg',
+       'gggggbgb',
+       'ggggggbg',
+       'gggggbgb'],
+      ['gggggggg',
+       'gggBBggg',
+       'ggBbbBgg',
+       'ggBbbBgg',
+       'gggBBggg',
+       'ggggggGg',
+       'gDgggggg',
+       'gggggggg']
     ],
 
     // clumps of blades, the classic wild-encounter patch
     tall: [
       ['tttttttt',
-       'ttttttTt',
-       'tTtttTTt',
+       'tTtttTtt',
+       'tTTttTTt',
+       'TTTtTTTt',
+       'tttttttt',
+       'ttTtttTt',
+       'tTTTtTTT',
+       'yyyyyyyy'],
+      ['tttttttt',
+       'TttttTtt',
+       'TTtttTTt',
        'TTTttTTT',
        'tttttttt',
-       'tttTtttt',
-       'ttTTTttt',
-       'tttttttt'],
-      ['tttttttt',
-       'tTtttttt',
-       'TTTtttTt',
-       'ttttttTT',
-       'tttttttt',
-       'tttttTtt',
-       'ttttTTTt',
-       'tttttttt']
-    ],
-
-    tree: [
-      ['ggccccgg',
-       'gcCCCCcg',
-       'cCCccCCc',
-       'cCccccCc',
-       'gccccccg',
-       'ggckkcgg',
-       'gggkkggg',
-       'gggggggg']
-    ],
-
-    peak: [
-      ['rrrRRrrr',
-       'rrRRRRrr',
-       'rRRRRRRr',
-       'RRRRRRRR',
-       'rrrrrrrr',
-       'rrRrrrrr',
-       'rrrrrRrr',
-       'rrrrrrrr']
+       'tttTtttT',
+       'ttTTTtTT',
+       'yyyyyyyy']
     ],
 
     cave: [
       ['rrrrrrrr',
-       'rrrddrrr',
-       'rrddddrr',
-       'rddddddr',
-       'rddddddr',
-       'rddddddr',
-       'rddddddr',
+       'rrxnnxrr',
+       'rxnnnnxr',
+       'rnnnnnnr',
+       'rnnnnnnr',
+       'rnnnnnnr',
+       'rxnnnnxr',
        'rrrrrrrr']
     ],
 
-    // town pieces — the 5x3 stamp in region.js is read as buildings
-    roof: [
-      ['ffffffff',
-       'fFFFFFFf',
+    /* town pieces — the 5x3 stamp in region.js is read as a building
+       cluster: three roof tiles, then wall/door/wall with a fence post
+       either side, then a paved yard. */
+
+    roofL: [
+      ['ggHHHHHH',
+       'gHffffff',
        'ffffffff',
        'ffffffff',
        'ffffffff',
        'ffffffff',
        'ffffffff',
-       'oooooooo']
+       'hhhhhhhh']
     ],
-    roofAlt: [
-      ['FFFFFFFF',
-       'FffffffF',
-       'FFFFFFFF',
-       'FFFFFFFF',
-       'FFFFFFFF',
-       'FFFFFFFF',
-       'FFFFFFFF',
-       'oooooooo']
+    // the pokéball emblem is what makes it read as a pokémon centre
+    roofC: [
+      ['HHHHHHHH',
+       'ffffffff',
+       'ffeeeeff',
+       'feeeeeef',
+       'ffhhhhff',
+       'feeeeeef',
+       'ffeeeeff',
+       'hhhhhhhh']
+    ],
+    roofR: [
+      ['HHHHHHgg',
+       'ffffffHg',
+       'ffffffff',
+       'ffffffff',
+       'ffffffff',
+       'ffffffff',
+       'ffffffff',
+       'hhhhhhhh']
     ],
     wall: [
       ['wwwwwwww',
-       'wwoowwww',
-       'wwoowwww',
+       'wwWWWWww',
+       'wwqqqqww',
+       'wwqqqqww',
+       'wwWWWWww',
        'wwwwwwww',
        'wwwwwwww',
-       'wwwwoowo',
-       'wwwwwwww',
-       'oooooooo']
+       'WWWWWWWW']
     ],
     door: [
       ['wwwwwwww',
        'wwwwwwww',
-       'woooooow',
-       'woooooow',
-       'wooooPow',
-       'woooooow',
-       'woooooow',
-       'woooooow']
+       'WWWWWWWW',
+       'WqqqqqqW',
+       'WqqooqqW',
+       'WqqooqqW',
+       'WqqooqqW',
+       'WWWWWWWW']
     ],
     // low fence either side of the buildings
     post: [
       ['gggggggg',
        'gggggggg',
-       'gggggggg',
        'gkgggkgg',
        'kkkkkkkk',
        'gkgggkgg',
        'gkgggkgg',
+       'gggggggg',
        'gggggggg']
+    ],
+    yard: [
+      ['pppppppp',
+       'pPpppppp',
+       'pppppppp',
+       'ppppPppp',
+       'pppppppp',
+       'pPpppppp',
+       'pppppppp',
+       'ppppPppp']
     ]
   };
 
   /* -----------------------------------------------------
-     Sprites
+     The trainer
 
-     The trainer is 8x12 and drawn side-on once, then
-     mirrored for the other facing — half the art, and the
-     two directions stay in step by construction.
+     10x14, drawn side-on once and mirrored for the other
+     facing — half the art, and the two directions stay in
+     step by construction. Rows 12 and 13 come from LEGS so
+     the walk cycle only re-authors the feet.
      ----------------------------------------------------- */
 
-  var SCH = { i: 'ink', n: 'skin', c: 'cloth', h: 'sand-lit' };
+  var SCH = {
+    R: 'cap',    r: 'cap-dk',     W: 'cap-white', L: 'cap-logo',
+    h: 'hair',   n: 'skin',       m: 'skin-dk',   e: 'eye',
+    J: 'jacket', j: 'jacket-dk',  S: 'sleeve',    k: 'glove',
+    d: 'denim',  b: 'shoe'
+  };
 
+  // rows 0-11; the brim is the widest row, which is what reads as a cap
   var TRAINER = {
     down: [
-      '..iiii..',
-      '.iiiiii.',
-      '.innnni.',
-      '.nnnnnn.',
-      '.ninnin.',
-      '..nnnn..',
-      '.cccccc.',
-      'nccccccn',
-      '.cccccc.',
-      '..cccc..',
-      '.cc..cc.',
-      '.ii..ii.'
+      '..RRRRRR..',
+      '.RRRRRRRR.',
+      '.RWWLLWWR.',
+      'rrRRRRRRrr',
+      '.hnnnnnnh.',
+      '.hnennenh.',
+      '.hnnnnnnh.',
+      '..mnnnnm..',
+      '.SJJJJJJS.',
+      '.SJJjjJJS.',
+      '.kJJJJJJk.',
+      '..dddddd..'
     ],
-    // seen from behind: all hair, so it needs the cap brim to read as a head
+    // seen from behind there's no face, so the hair mass is the whole tell
     up: [
-      '..iiii..',
-      '.iiiiii.',
-      '.iiiiii.',
-      '.ihhhhi.',
-      '.iiiiii.',
-      '..iiii..',
-      '.cccccc.',
-      'nccccccn',
-      '.cccccc.',
-      '..cccc..',
-      '.cc..cc.',
-      '.ii..ii.'
+      '..RRRRRR..',
+      '.RRRRRRRR.',
+      '.RRRRRRRR.',
+      'rrRRRRRRrr',
+      '.hhhhhhhh.',
+      '.hhhhhhhh.',
+      '.hhhhhhhh.',
+      '..hhhhhh..',
+      '.SJJJJJJS.',
+      '.SJJJJJJS.',
+      '.kJJJJJJk.',
+      '..dddddd..'
     ],
     side: [
-      '..iiii..',
-      '.iiiiii.',
-      '.iinnni.',
-      '..nnnni.',
-      '..ninnn.',
-      '...nnn..',
-      '..cccc..',
-      '..ccccn.',
-      '..cccc..',
-      '..cccc..',
-      '..cc.cc.',
-      '..ii.ii.'
+      '..RRRRRR..',
+      '.RRRRRRRRr',
+      '.RWWLLWWRr',
+      'rrRRRRRRrr',
+      '.hhnnnnn..',
+      '.hhnnennn.',
+      '.hhnnnnnn.',
+      '..hmnnnm..',
+      '..SJJJJJ..',
+      '..SJJJJJk.',
+      '..JJJJJJ..',
+      '..dddddd..'
     ]
   };
 
-  // frame 1 brings the legs together; rows 10 and 11 are legs and feet
+  // rows 12-13 per sheet column: neutral, step, opposite step
   var LEGS = {
-    down: ['..cccc..', '..iiii..'],
-    up:   ['..cccc..', '..iiii..'],
-    side: ['..cccc..', '..iiii..']
+    down: [['..dd..dd..', '..bb..bb..'],
+           ['..dd.dd...', '..bb.bb...'],
+           ['...dd.dd..', '...bb.bb..']],
+    up:   [['..dd..dd..', '..bb..bb..'],
+           ['..dd.dd...', '..bb.bb...'],
+           ['...dd.dd..', '...bb.bb..']],
+    side: [['...dddd...', '...bbbb...'],
+           ['..dd..dd..', '..bb..bb..'],
+           ['...dd.dd..', '...bb.bb..']]
   };
 
   var DIR_ROW = { down: 0, left: 1, right: 2, up: 3 };
 
-  // four small originals for the tall-grass encounters
+  // region.js bumps `frame` once per tile step, so this is the classic
+  // step / neutral / other-step / neutral beat
+  var WALK = [0, 1, 0, 2];
+  var FRAMES = 3;
+
+  /* -----------------------------------------------------
+     Wild sprites — one per name in WILD (region.js), in the
+     same order, so the flash text and the art agree.
+     ----------------------------------------------------- */
+
+  function mon(name, rows) {
+    return {
+      rows: rows,
+      chars: { a: 'mon-' + name, b: 'mon-' + name + '-lit', e: 'eye' }
+    };
+  }
+
   var CRITTERS = [
-    ['.c....c.',
-     '.cc..cc.',
-     '.cccccc.',
-     'cciccicc',
-     'cccccccc',
-     '.cccccc.',
-     '..c..c..',
-     '........'],
-    ['...cc...',
-     '..cccc..',
-     '.ciccic.',
-     'cccccccc',
-     '.cccccc.',
-     '..cccc..',
-     '..c..c..',
-     '........'],
-    ['........',
-     '..cccc..',
-     '.ciccic.',
-     'cccccccc',
-     'cccccccc',
-     '.cccccc.',
-     '.c.cc.c.',
-     '........'],
-    ['........',
-     '...cc...',
-     '..cccc..',
-     '.ciccic.',
-     'cccccccc',
-     'cccccccc',
-     '.cccccc.',
-     '........']
+    mon('umbreon', [
+      'a......a',
+      'ab....ba',
+      'aa....aa',
+      '.aaaaaa.',
+      '.aeaaea.',
+      '.aaaaaa.',
+      '..abba..',
+      '..a..a..'
+    ]),
+    mon('zubat', [
+      '.a....a.',
+      'ba....ab',
+      'baaaaaab',
+      'baaaaaab',
+      '.aaaaaa.',
+      '..a..a..',
+      '..b..b..',
+      '........'
+    ]),
+    mon('oddish', [
+      '..b..b..',
+      '.bb.bb..',
+      '.bbbbbb.',
+      '..aaaa..',
+      '.aaaaaa.',
+      '.aeaaea.',
+      '.aaaaaa.',
+      '..a..a..'
+    ]),
+    mon('rattata', [
+      '.a....a.',
+      'aa....aa',
+      '.aaaaaa.',
+      '.aeaaea.',
+      'baaaaaab',
+      '.aaaaaa.',
+      '..aaaa.b',
+      '..a..a.b'
+    ]),
+    mon('ponyta', [
+      '.b...b..',
+      'bb..bb..',
+      'bbaaaa..',
+      '.baaaaa.',
+      '..aaaaa.',
+      '..aeaaa.',
+      '..a.a.a.',
+      '..a.a.a.'
+    ]),
+    mon('gastly', [
+      '..bbbb..',
+      '.bbbbbb.',
+      'bbaaaabb',
+      'baeaaeab',
+      'baaaaaab',
+      'bbaaaabb',
+      '.bbbbbb.',
+      '..b..b..'
+    ])
   ];
 
   /* -----------------------------------------------------
@@ -368,64 +479,128 @@ window.KX = window.KX || {};
 
   var cache = null;
 
+  /** One building cluster in a given set of roof colours. */
+  function buildSet(chars, pal) {
+    return {
+      roofL: stamp(ART.roofL[0], chars, pal),
+      roofC: stamp(ART.roofC[0], chars, pal),
+      roofR: stamp(ART.roofR[0], chars, pal),
+      wall: stamp(ART.wall[0], chars, pal),
+      door: stamp(ART.door[0], chars, pal),
+      post: stamp(ART.post[0], chars, pal),
+      yard: stamp(ART.yard[0], chars, pal)
+    };
+  }
+
   function buildCache(pal) {
     var c = {
       sea: stampSet('sea', pal),
       sand: stampSet('sand', pal),
       grass: stampSet('grass', pal),
+      bloom: stampSet('bloom', pal),
       tall: stampSet('tall', pal),
-      tree: stampSet('tree', pal),
-      peak: stampSet('peak', pal),
       cave: stampSet('cave', pal),
-      roof: stampSet('roof', pal)[0],
-      roofAlt: stampSet('roofAlt', pal)[0],
-      wall: stampSet('wall', pal)[0],
-      door: stampSet('door', pal)[0],
-      post: stampSet('post', pal)[0],
       shore: [],
-      route: []
+      route: [],
+      tree: [],
+      peak: [],
+      builds: {
+        center: buildSet(CH, pal),
+        gate: buildSet(CH_GATE, pal)
+      }
     };
 
-    // shore: sand with a wet edge on whichever sides face the sea
-    for (var m = 0; m < 16; m++) {
+    var m, g;
+
+    // shore: sand with a foam line on whichever sides face the sea
+    for (m = 0; m < 16; m++) {
       var sc = mk(TILE, TILE);
-      var sg = sc.getContext('2d');
-      sg.drawImage(c.sand[m & 1], 0, 0);
-      sg.fillStyle = pal['sea-lit'];
-      if (m & 1) sg.fillRect(0, 0, TILE, 1);              // N
-      if (m & 2) sg.fillRect(0, TILE - 1, TILE, 1);       // S
-      if (m & 4) sg.fillRect(TILE - 1, 0, 1, TILE);       // E
-      if (m & 8) sg.fillRect(0, 0, 1, TILE);              // W
+      g = sc.getContext('2d');
+      g.drawImage(c.sand[m & 1], 0, 0);
+      g.fillStyle = pal.foam;
+      if (m & 1) g.fillRect(0, 0, TILE, 1);              // N
+      if (m & 2) g.fillRect(0, TILE - 1, TILE, 1);       // S
+      if (m & 4) g.fillRect(TILE - 1, 0, 1, TILE);       // E
+      if (m & 8) g.fillRect(0, 0, 1, TILE);              // W
       c.shore.push(sc);
     }
 
-    // route: a path blob with an arm toward each connected neighbour, so the
-    // 4-bit mask that picks the ascii box-drawing glyph picks this too
-    for (var r = 0; r < 16; r++) {
+    // route: a wide dirt path with an arm toward each connected neighbour, so
+    // the 4-bit mask that picks the ascii box-drawing glyph picks this too
+    for (m = 0; m < 16; m++) {
       var rc = mk(TILE, TILE);
-      var rg = rc.getContext('2d');
-      rg.drawImage(c.grass[r & 1], 0, 0);
-      rg.fillStyle = pal.path;
-      rg.fillRect(2, 2, 4, 4);
-      if (r & 1) rg.fillRect(2, 0, 4, 3);
-      if (r & 2) rg.fillRect(2, 5, 4, 3);
-      if (r & 4) rg.fillRect(5, 2, 3, 4);
-      if (r & 8) rg.fillRect(0, 2, 3, 4);
-      rg.fillStyle = pal['path-lit'];
-      rg.fillRect(3, 3, 1, 1);
-      rg.fillRect(5, 4, 1, 1);
+      g = rc.getContext('2d');
+      g.drawImage(c.grass[m & 1], 0, 0);
+      g.fillStyle = pal.path;
+      g.fillRect(1, 1, 6, 6);
+      if (m & 1) g.fillRect(1, 0, 6, 2);
+      if (m & 2) g.fillRect(1, 6, 6, 2);
+      if (m & 4) g.fillRect(6, 1, 2, 6);
+      if (m & 8) g.fillRect(0, 1, 2, 6);
+      g.fillStyle = pal['path-lit'];
+      g.fillRect(2, 2, 1, 1);
+      g.fillRect(5, 4, 1, 1);
+      g.fillRect(3, 5, 1, 1);
       c.route.push(rc);
     }
 
-    // plain paved tile for the ground in front of the buildings
-    var yc = mk(TILE, TILE);
-    var yg = yc.getContext('2d');
-    yg.fillStyle = pal.path;
-    yg.fillRect(0, 0, TILE, TILE);
-    yg.fillStyle = pal['path-lit'];
-    yg.fillRect(1, 2, 1, 1);
-    yg.fillRect(5, 5, 1, 1);
-    c.yard = yc;
+    /* Tree and mountain both autotile off the same 4-bit neighbour mask as
+       the routes do: the dark outline is drawn only on edges with no
+       matching neighbour, so a block of forest merges into one canopy
+       instead of reading as a field of identical bumps. */
+
+    for (m = 0; m < 16; m++) {
+      var tc = mk(TILE, TILE);
+      g = tc.getContext('2d');
+      g.drawImage(c.grass[m & 1], 0, 0);
+
+      // outline box, pulled in on every exposed side (and off the bottom,
+      // where the trunk needs the room)
+      var x0 = (m & 8) ? 0 : 1, x1 = (m & 4) ? TILE : TILE - 1;
+      var y0 = (m & 1) ? 0 : 1, y1 = (m & 2) ? TILE : TILE - 2;
+      g.fillStyle = pal['tree-dk'];
+      g.fillRect(x0, y0, x1 - x0, y1 - y0);
+
+      var ix0 = (m & 8) ? 0 : 2, ix1 = (m & 4) ? TILE : TILE - 2;
+      var iy0 = (m & 1) ? 0 : 2, iy1 = (m & 2) ? TILE : TILE - 3;
+      g.fillStyle = pal.tree;
+      g.fillRect(ix0, iy0, ix1 - ix0, iy1 - iy0);
+
+      g.fillStyle = pal['tree-lit'];
+      if (!(m & 1)) g.fillRect(ix0, iy0, ix1 - ix0, 1);   // sun on the top edge
+      g.fillRect(2, 3, 1, 1);                             // dappling, always
+      g.fillRect(5, 2, 1, 1);                             // inside the inner
+      g.fillRect(3, 4, 1, 1);                             // box on every mask
+
+      // the trunk shows only where the canopy stops
+      if (!(m & 2)) {
+        g.fillStyle = pal.trunk;
+        g.fillRect(3, TILE - 3, 2, 3);
+      }
+      c.tree.push(tc);
+    }
+
+    for (m = 0; m < 16; m++) {
+      var pc = mk(TILE, TILE);
+      g = pc.getContext('2d');
+      g.drawImage(c.grass[m & 1], 0, 0);
+
+      var px0 = (m & 8) ? 0 : 1, px1 = (m & 4) ? TILE : TILE - 1;
+      var py0 = (m & 1) ? 0 : 1, py1 = (m & 2) ? TILE : TILE - 1;
+      g.fillStyle = pal['rock-dk'];
+      g.fillRect(px0, py0, px1 - px0, py1 - py0);
+
+      var qx0 = (m & 8) ? 0 : 2, qx1 = (m & 4) ? TILE : TILE - 2;
+      var qy0 = (m & 1) ? 0 : 2, qy1 = (m & 2) ? TILE : TILE - 2;
+      g.fillStyle = pal.rock;
+      g.fillRect(qx0, qy0, qx1 - qx0, qy1 - qy0);
+
+      g.fillStyle = pal['rock-lit'];
+      if (!(m & 1)) g.fillRect(qx0, qy0, qx1 - qx0, 1);   // lit face on top
+      g.fillRect(2, 3, 2, 1);
+      g.fillRect(4, 4, 1, 1);
+      c.peak.push(pc);
+    }
 
     return c;
   }
@@ -438,12 +613,25 @@ window.KX = window.KX || {};
 
   var trainerUrl = null, critterUrl = null, sheetSig = null;
 
+  // every key the sheets actually paint with — the signature has to cover
+  // all of them or a palette change leaves a stale sheet behind
+  var SHEET_KEYS = (function () {
+    var seen = {}, out = [], k, i;
+    for (k in SCH) if (Object.prototype.hasOwnProperty.call(SCH, k)) seen[SCH[k]] = 1;
+    for (i = 0; i < CRITTERS.length; i++) {
+      var ch = CRITTERS[i].chars;
+      for (k in ch) if (Object.prototype.hasOwnProperty.call(ch, k)) seen[ch[k]] = 1;
+    }
+    for (k in seen) if (Object.prototype.hasOwnProperty.call(seen, k)) out.push(k);
+    return out;
+  })();
+
   function palSig(pal) {
-    return pal.ink + pal.skin + pal.cloth + pal['sand-lit'];
+    return SHEET_KEYS.map(function (k) { return pal[k]; }).join('|');
   }
 
   function buildSheets(pal) {
-    var sheet = mk(TILE * 2, SPRITE_H * 4);
+    var sheet = mk(SPRITE_W * FRAMES, SPRITE_H * 4);
     var g = sheet.getContext('2d');
 
     Object.keys(DIR_ROW).forEach(function (dir) {
@@ -451,19 +639,19 @@ window.KX = window.KX || {};
       var rows = TRAINER[src];
       var row = DIR_ROW[dir];
 
-      for (var f = 0; f < 2; f++) {
-        var body = rows.slice(0, 10).concat(f ? LEGS[src] : rows.slice(10, 12));
+      for (var f = 0; f < FRAMES; f++) {
+        var body = rows.concat(LEGS[src][f]);
         if (dir === 'left') {
           // draw the side pose mirrored rather than authoring it twice
-          var tmp = mk(TILE, SPRITE_H);
+          var tmp = mk(SPRITE_W, SPRITE_H);
           paint(tmp.getContext('2d'), body, SCH, pal, 0, 0);
           g.save();
-          g.translate(f * TILE + TILE, row * SPRITE_H);
+          g.translate(f * SPRITE_W + SPRITE_W, row * SPRITE_H);
           g.scale(-1, 1);
           g.drawImage(tmp, 0, 0);
           g.restore();
         } else {
-          paint(g, body, SCH, pal, f * TILE, row * SPRITE_H);
+          paint(g, body, SCH, pal, f * SPRITE_W, row * SPRITE_H);
         }
       }
     });
@@ -472,8 +660,8 @@ window.KX = window.KX || {};
 
     var cs = mk(TILE * CRITTERS.length, TILE);
     var cg = cs.getContext('2d');
-    CRITTERS.forEach(function (rows, i) {
-      paint(cg, rows, SCH, pal, i * TILE, 0);
+    CRITTERS.forEach(function (c, i) {
+      paint(cg, c.rows, c.chars, pal, i * TILE, 0);
     });
     critterUrl = cs.toDataURL();
     sheetSig = palSig(pal);
@@ -490,13 +678,17 @@ window.KX = window.KX || {};
 
   var canvas = null, cellPx = 8;
 
-  function seaMask(MAP, x, y) {
-    var SEA = MAP.codes.SEA;
+  /**
+   * 4-bit N|S|E|W mask of the neighbours matching `code`. Off-map counts as
+   * a match so coastlines and forests don't outline themselves against the
+   * edge of the world.
+   */
+  function maskOf(MAP, x, y, code) {
     var m = 0;
-    if (!MAP.inside(x, y - 1) || MAP.at(x, y - 1) === SEA) m |= 1;
-    if (!MAP.inside(x, y + 1) || MAP.at(x, y + 1) === SEA) m |= 2;
-    if (!MAP.inside(x + 1, y) || MAP.at(x + 1, y) === SEA) m |= 4;
-    if (!MAP.inside(x - 1, y) || MAP.at(x - 1, y) === SEA) m |= 8;
+    if (!MAP.inside(x, y - 1) || MAP.at(x, y - 1) === code) m |= 1;
+    if (!MAP.inside(x, y + 1) || MAP.at(x, y + 1) === code) m |= 2;
+    if (!MAP.inside(x + 1, y) || MAP.at(x + 1, y) === code) m |= 4;
+    if (!MAP.inside(x - 1, y) || MAP.at(x - 1, y) === code) m |= 8;
     return m;
   }
 
@@ -506,14 +698,15 @@ window.KX = window.KX || {};
       var t = MAP.TOWNS[i];
       var dx = x - t.x, dy = y - t.y;
       if (Math.abs(dx) > 2 || Math.abs(dy) > 1) continue;
-      if (dy === -1) return dx === 0 ? c.roof : c.roofAlt;
+      var b = c.builds[t.build] || c.builds.center;
+      if (dy === -1) return dx < 0 ? b.roofL : dx > 0 ? b.roofR : b.roofC;
       if (dy === 0) {
-        if (Math.abs(dx) === 2) return c.post;
-        return dx === 0 ? c.door : c.wall;
+        if (Math.abs(dx) === 2) return b.post;
+        return dx === 0 ? b.door : b.wall;
       }
-      return c.yard;
+      return b.yard;
     }
-    return c.yard;
+    return c.builds.center.yard;
   }
 
   var renderer = {
@@ -551,15 +744,22 @@ window.KX = window.KX || {};
       for (var y = 0; y < H; y++) {
         for (var x = 0; x < W; x++) {
           var t = MAP.at(x, y);
-          var alt = MAP.hash2(x, y) < 0.5 ? 0 : 1;
+          var hv = MAP.hash2(x, y);
+          var alt = hv < 0.5 ? 0 : 1;
           var img;
 
           if (t === K.SEA) img = cache.sea[alt];
-          else if (t === K.SAND) img = cache.shore[seaMask(MAP, x, y)];
-          else if (t === K.GRASS) img = cache.grass[alt];
+          else if (t === K.SAND) img = cache.shore[maskOf(MAP, x, y, K.SEA)];
+          else if (t === K.GRASS) {
+            // a minority of grass tiles carry flowers
+            img = hv < 0.42 ? cache.grass[0]
+                : hv < 0.84 ? cache.grass[1]
+                : hv < 0.94 ? cache.bloom[0]
+                : cache.bloom[1];
+          }
           else if (t === K.TALL) img = cache.tall[alt];
-          else if (t === K.TREE) img = cache.tree[0];
-          else if (t === K.PEAK) img = cache.peak[0];
+          else if (t === K.TREE) img = cache.tree[maskOf(MAP, x, y, K.TREE)];
+          else if (t === K.PEAK) img = cache.peak[maskOf(MAP, x, y, K.PEAK)];
           else if (t === K.CAVE) img = cache.cave[0];
           else if (t === K.ROUTE) img = cache.route[MAP.routeMask(x, y)];
           else img = townTile(MAP, cache, x, y);
@@ -589,12 +789,15 @@ window.KX = window.KX || {};
       };
     },
 
+    // the sheet is FRAMES columns by 4 rows; style.css has to carry the
+    // matching background-size or the sprite tears
     sprite: function (el, dir, frame) {
       ensureSheets(readPalette());
       el.textContent = '';
       el.style.backgroundImage = 'url(' + trainerUrl + ')';
       el.style.backgroundPosition =
-        (frame & 1 ? 100 : 0) + '% ' + (DIR_ROW[dir] || 0) * (100 / 3) + '%';
+        WALK[frame & 3] * (100 / (FRAMES - 1)) + '% ' +
+        (DIR_ROW[dir] || 0) * (100 / 3) + '%';
     },
 
     critter: function (el, index) {

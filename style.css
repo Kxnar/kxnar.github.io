@@ -50,32 +50,83 @@
   --lh: 1.65;
 
   /* pixel-map palette — the only colours in the site that aren't terminal
-     tokens, because region-tiles.js paints raster art. It reads these off
-     :root at draw time, so a theme switch is a repaint, not a code branch.
-     Dark theme = dusk. */
-  --px-sea:        #16323f;
-  --px-sea-lit:    #22536a;
-  --px-sand:       #6b6047;
-  --px-sand-lit:   #7d7157;
-  --px-grass:      #294a33;
-  --px-grass-lit:  #35603f;
-  --px-tall:       #1d3a28;
-  --px-tall-lit:   #2c5636;
-  --px-tree:       #17301f;
-  --px-tree-lit:   #234a2d;
-  --px-trunk:      #2b2118;
-  --px-rock:       #3a3a40;
-  --px-rock-lit:   #55555e;
-  --px-path:       #55483a;
-  --px-path-lit:   #6d5c49;
-  --px-roof:       #7a3a3a;
-  --px-roof-alt:   #3a5570;
-  --px-wall:       #766b5b;
-  --px-door:       #2b2118;
-  --px-cave:       #0f0f12;
-  --px-ink:        #05070a;
-  --px-skin:       #c79a6b;
-  --px-cloth:      #7eb8b0;
+     tokens, because region-tiles.js paints raster art and reads these off
+     :root at draw time.
+
+     Unlike every other colour here this set is deliberately *theme-
+     independent* — it lives only in :root and is not overridden under
+     [data-theme="light"]. These are pokémon overworld colours: grass is
+     green and ash's cap is red whichever terminal theme is on. Every key
+     below must also appear in PX_KEYS in region-tiles.js, or the tile
+     paints magenta. */
+
+  /* terrain */
+  --px-grass:      #88d060;
+  --px-grass-lit:  #a8e078;
+  --px-grass-dk:   #58a038;
+  --px-bloom:      #ffffff;
+  --px-bloom-alt:  #f890b8;
+  --px-tall:       #58a840;
+  --px-tall-lit:   #78c858;
+  --px-tall-dk:    #38782c;
+  --px-tree:       #38903c;
+  --px-tree-lit:   #68c060;
+  --px-tree-dk:    #1c5828;
+  --px-trunk:      #8a5a30;
+  --px-sea:        #3888d8;
+  --px-sea-lit:    #68b8f0;
+  --px-foam:       #ffffff;
+  --px-sand:       #f0dca0;
+  --px-sand-lit:   #fff0c8;
+  --px-rock:       #9890a0;
+  --px-rock-lit:   #c8c0c8;
+  --px-rock-dk:    #605868;
+  --px-path:       #e0c088;
+  --px-path-lit:   #f8e0b0;
+  --px-cave:       #201828;
+
+  /* buildings — pokémon-centre red, league-gate blue */
+  --px-roof:         #f05038;
+  --px-roof-lit:     #f88860;
+  --px-roof-dk:      #b02818;
+  --px-roof-alt:     #3868c8;
+  --px-roof-alt-lit: #6898e8;
+  --px-roof-alt-dk:  #24408c;
+  --px-wall:         #f8f0e0;
+  --px-wall-dk:      #d0c0a8;
+  --px-glass:        #58b8e0;
+  --px-door:         #3868c8;
+  --px-emblem:       #ffffff;
+
+  /* the trainer */
+  --px-cap:        #e8382c;
+  --px-cap-dk:     #b02018;
+  --px-cap-white:  #ffffff;
+  --px-cap-logo:   #38b058;
+  --px-hair:       #181820;
+  --px-eye:        #202028;
+  --px-skin:       #f8c898;
+  --px-skin-dk:    #d8986a;
+  --px-jacket:     #3060d0;
+  --px-jacket-dk:  #1c3c90;
+  --px-sleeve:     #f0f0f8;
+  --px-glove:      #58b058;
+  --px-denim:      #3050a0;
+  --px-shoe:       #202028;
+
+  /* wild sprites — one pair per name in WILD (region.js), same order */
+  --px-mon-umbreon:     #2c2c3c;
+  --px-mon-umbreon-lit: #f8d848;
+  --px-mon-zubat:       #6858c0;
+  --px-mon-zubat-lit:   #a890e8;
+  --px-mon-oddish:      #4868c8;
+  --px-mon-oddish-lit:  #58b048;
+  --px-mon-rattata:     #a858a8;
+  --px-mon-rattata-lit: #d890d8;
+  --px-mon-ponyta:      #f8f8f8;
+  --px-mon-ponyta-lit:  #f88030;
+  --px-mon-gastly:      #382848;
+  --px-mon-gastly-lit:  #7858a8;
 
   color-scheme: dark;
 }
@@ -95,30 +146,8 @@
   --link: #2d6a63;
   --link-hover: #1a4a44;
 
-  /* pixel-map palette, daytime */
-  --px-sea:        #3f8fb5;
-  --px-sea-lit:    #6fc0dc;
-  --px-sand:       #e0cf9a;
-  --px-sand-lit:   #f2e6bd;
-  --px-grass:      #6fae5a;
-  --px-grass-lit:  #8ecb6f;
-  --px-tall:       #4f8f45;
-  --px-tall-lit:   #68ab55;
-  --px-tree:       #2f7340;
-  --px-tree-lit:   #459250;
-  --px-trunk:      #6b4a2f;
-  --px-rock:       #9b9382;
-  --px-rock-lit:   #c2bba8;
-  --px-path:       #c9a97a;
-  --px-path-lit:   #e2c99b;
-  --px-roof:       #d24b4b;
-  --px-roof-alt:   #4b74d2;
-  --px-wall:       #f0e6d2;
-  --px-door:       #6b4a2f;
-  --px-cave:       #3a3a40;
-  --px-ink:        #2a2825;
-  --px-skin:       #f0c49a;
-  --px-cloth:      #1f5c56;
+  /* no --px-* here on purpose: the pixel map keeps one bright daytime
+     palette in both themes (see the block in :root) */
 
   color-scheme: light;
 }
@@ -588,6 +617,17 @@ body.no-crt .term::after { display: none; }
 .map-mode-btn:hover,
 .map-mode-btn:focus-visible { color: var(--accent); }
 
+/* a header with a control parked opposite the title. Same space-between
+   idiom as .side-head / .inst-head / .coursework-head; scoped to the
+   modifier so the map page's header keeps its stacked layout. */
+.page-header.with-action {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--sp-4);
+  flex-wrap: wrap;   /* on a phone the control drops under the title */
+}
+
 .section-title {
   font-size: var(--fs-base);
   font-weight: 600;
@@ -933,7 +973,6 @@ input[type="range"]::-moz-range-thumb {
 
 .inst-head {
   display: flex;
-  justify-content: space-between;
   align-items: baseline;
   gap: var(--sp-4);
   flex-wrap: wrap;
@@ -946,6 +985,76 @@ input[type="range"]::-moz-range-thumb {
 .inst-name:hover { color: var(--accent); }
 .inst-meta { color: var(--text-dim); font-size: var(--fs-sm); }
 .inst-role { color: var(--text-dim); font-size: var(--fs-base); }
+
+.institution-group {
+  margin-bottom: var(--sp-6);
+}
+.institution-group summary {
+  color: var(--text-bright);
+  font-weight: 600;
+  font-size: var(--fs-lg);
+  cursor: pointer;
+  user-select: none;
+  padding: var(--sp-4) 0;
+  list-style: none;
+}
+.institution-group summary::marker {
+  content: '';
+}
+.institution-group summary::before {
+  content: '>_ ';
+  color: var(--accent);
+  margin-right: var(--sp-2);
+}
+.institution-group summary:hover {
+  color: var(--accent);
+}
+
+.subject-list {
+  list-style: none;
+  padding: 0;
+  margin: var(--sp-4) 0;
+  color: var(--text-dim);
+  font-size: var(--fs-base);
+}
+.subject-list li {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
+}
+.subject-subject,
+.subject-grade {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: var(--fs-base);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: 2px;
+}
+.subject-subject {
+  flex: 1;
+  min-width: 0;
+}
+.subject-grade {
+  width: 4rem;
+  text-align: center;
+}
+
+/* opens the vault graph in the side pane — styled like the map's renderer
+   switch, brackets and all */
+.graph-btn {
+  flex: 0 0 auto;
+  font-size: var(--fs-base);
+  color: var(--text-dim);
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+.graph-btn::before { content: '['; margin-right: 0.25em; }
+.graph-btn::after  { content: ']'; margin-left: 0.25em; }
+.graph-btn:hover,
+.graph-btn:focus-visible { color: var(--accent); }
 
 .coursework-head {
   display: flex;
@@ -1197,14 +1306,19 @@ input[type="range"]::-moz-range-thumb {
   text-shadow: 0 0 4px var(--bg), 0 0 2px var(--bg);
 }
 
-/* In tiles mode the sprite is a generated 8x12 walk sheet (2 frames wide,
-   4 directions tall) instead of a glyph. It's a tile and a half tall and
-   hangs half a tile above its cell, so the trainer stands *on* the tile. */
+/* In tiles mode the sprite is a generated 10x14 walk sheet (3 frames wide,
+   4 directions tall) instead of a glyph. On an 8px tile that's 1.25 cells
+   wide and 1.75 tall: the overhang is split either side, and the whole
+   thing hangs 0.75 of a tile up so the trainer stands *on* his cell.
+   background-size must stay in step with SPRITE_W/SPRITE_H and the
+   backgroundPosition maths in region-tiles.js sprite(). */
 .mode-tiles .region-sprite {
-  height: calc(var(--cell-h, 12px) * 1.5);
-  margin-top: calc(var(--cell-h, 12px) * -0.5);
+  width: calc(var(--cell-w, 7px) * 1.25);
+  height: calc(var(--cell-h, 12px) * 1.75);
+  margin-left: calc(var(--cell-w, 7px) * -0.125);
+  margin-top: calc(var(--cell-h, 12px) * -0.75);
   background-repeat: no-repeat;
-  background-size: 200% 400%;
+  background-size: 300% 400%;
   image-rendering: pixelated;
   text-shadow: none;
 }
@@ -1404,6 +1518,35 @@ input[type="range"]::-moz-range-thumb {
 .drawer-go:hover { border-color: var(--accent); }
 
 /* ===========================
+   NOTES GRAPH
+   =========================== */
+
+/* The graph mounts inside a .log-line in the side pane, so it has to undo
+   the transcript's pre-wrap — otherwise the whitespace in the printed HTML
+   renders as literal space around the canvas. */
+.notes-graph {
+  white-space: normal;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-height: 340px;
+  margin: var(--sp-2) 0;
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+}
+
+.notes-graph-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: default;
+  touch-action: none;      /* pointermove has to win over scroll-to-pan */
+  user-select: none;
+}
+.notes-graph-canvas.over { cursor: pointer; }
+.notes-graph-canvas.grabbing { cursor: grabbing; }
+
+/* ===========================
    RESPONSIVE
    =========================== */
 
@@ -1414,6 +1557,10 @@ input[type="range"]::-moz-range-thumb {
   }
   .rail { order: -1; }
   .bio { max-width: none; }
+
+  /* the pane is a short strip here, so a square graph would be mostly
+     off-screen — cap it and let the aspect ratio give way */
+  .notes-graph { aspect-ratio: 16 / 10; max-height: 200px; }
 
   /* not enough width to sit a pane alongside — drop it under the content */
   .term-body { flex-direction: column; }
