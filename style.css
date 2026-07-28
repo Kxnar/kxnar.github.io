@@ -293,6 +293,33 @@ body.no-crt .term::after { display: none; }
 .is-touch .desk-only { display: none; }
 .is-touch .touch-only { display: revert; }
 
+/* --- touch targets ---
+
+   These are all sized for a mouse cursor: a few of them are under 20px
+   square. Grow the hit area with padding and a min size rather than with
+   font-size, so nothing about the terminal look changes — inline-flex is
+   what makes min-height actually apply to the inline ones. 44px is the
+   usual floor for a fingertip. */
+.is-touch .frac-arrow,
+.is-touch .drawer-close,
+.is-touch .side-close,
+.is-touch .status-link,
+.is-touch .map-mode-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* the status bar is a fixed-height strip; let its links fill it rather than
+   force it taller than the map can spare */
+.is-touch .status-link {
+  min-height: 32px;
+  padding: 0 var(--sp-2);
+}
+
 /* --- tab bar (the nav) --- */
 
 .term-tabs {
@@ -370,6 +397,12 @@ body.no-crt .term::after { display: none; }
 .term-main {
   flex: 1 1 auto;
   min-width: 0;
+  /* Under 980px .term-body stacks into a column, and a column flex item's
+     automatic minimum size lets this grow past its parent instead of
+     shrinking. That is invisible while the content scrolls, but the map page
+     is a fixed-height box in a clipped container: it overflowed .term and
+     pushed the game boy console off the bottom of a 667px phone. */
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
   overscroll-behavior: contain;
@@ -1284,7 +1317,6 @@ input[type="range"]::-moz-range-thumb {
   border: 1px solid var(--card-border);
   background: var(--card-bg);
   padding: var(--sp-4);
-  scrollbar-width: thin;
   /* hug the grid so the absolutely-positioned overlays stay anchored to the
      padding edge (= the grid origin) */
   width: max-content;
@@ -1832,6 +1864,19 @@ input[type="range"]::-moz-range-thumb {
 
 @media (max-width: 680px) {
   body { padding: 0; }
+
+  /* The type scale was fixed at every width, which put body text at ~13px on
+     a phone — readable at desk distance, not at arm's length. Nudge the whole
+     scale rather than individual rules, so every relative size moves with it.
+     The headings are left alone; they were already large enough and growing
+     them costs vertical space the map needs. */
+  :root {
+    --fs-xs: 0.74rem;
+    --fs-sm: 0.80rem;
+    --fs-md: 0.84rem;
+    --fs-base: 0.90rem;
+    --fs-lg: 0.96rem;
+  }
 
   .term {
     height: 100vh;

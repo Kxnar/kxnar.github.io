@@ -74,6 +74,8 @@ The gate is deliberately **not** a width breakpoint — a narrow desktop window 
 
 Because no desktop browser can be talked into reporting a coarse pointer, `?touch` on the URL forces the class on and `?touch=0` forces it off. That is the only way to exercise the JS branches outside a real device (adding the class from the console is too late — `KX.touch` has already been read).
 
+Two layout notes that only bite on a phone. **`.term-main` needs its explicit `min-height: 0`**: under 980px `.term-body` stacks into a column, and a column flex item's automatic minimum size lets `.term-main` grow past its parent rather than shrink. That is invisible while content scrolls, but the map page is a fixed-height box in a clipped container — it overflowed `.term` and pushed the game boy console off the bottom of a 667px phone. And the **type scale is nudged up inside `@media (max-width: 680px)`** rather than per-rule, so every relative size moves with it; headings are left alone because growing them costs vertical space the map needs.
+
 Copy that differs by device is written twice in the markup and switched by the `.desk-only` / `.touch-only` pair. Both variants stay in the DOM and **both are walked by the typing engine** — it skips `<pre>` and `[data-no-type]`, not `display: none` — which costs a little of the reveal budget and nothing else.
 
 ### Theming
