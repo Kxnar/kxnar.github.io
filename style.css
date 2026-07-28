@@ -1585,25 +1585,23 @@ input[type="range"]::-moz-range-thumb {
 /* ===========================
    GAME BOY CONSOLE  (touch only)
 
+   A d-pad on its own — no A/B, no START/SELECT. Everything they did is
+   reachable without them, and four keys centred under the map is a smaller
+   thing to explain than a full console.
+
    Drawn from the terminal tokens, not --px-*. Those exist because
    region-tiles.js paints to a canvas and can't read a class, so it has to
    read colours off :root, and they're theme-independent on purpose — grass
    is green in both themes. This is site chrome, not map art: sourced from
    --px-* it would be a bright plastic slab sitting under the --card-bg map
-   box and clashing with the light theme. Everything is square, as the rest
-   of the site is, except A and B — a circle is the strongest game boy
-   signifier there is and the site has no other circles, so it lands as
-   deliberate rather than sloppy.
+   box and clashing with the light theme. Square, as the rest of the site is.
    =========================== */
 
 .gb-console { display: none; }
 
 .is-touch .gb-console {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  justify-items: center;
-  gap: var(--sp-4);
+  display: flex;
+  justify-content: center;
   flex: 0 0 auto;
   margin-top: var(--sp-4);
   padding: var(--sp-4) var(--sp-3);
@@ -1663,46 +1661,6 @@ input[type="range"]::-moz-range-thumb {
 .gb-left::after { content: '\25C0'; }
 .gb-right::after { content: '\25B6'; }
 
-.gb-meta {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-2);
-}
-.gb-pill {
-  border: 1px solid var(--border);
-  background: var(--bg-secondary);
-  color: var(--text-dim);
-  font-size: 0.58rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: var(--sp-2) var(--sp-4);
-  min-height: 30px;
-  transition: color 0s, border-color 0s, background 0s;
-}
-
-.gb-ab {
-  display: flex;
-  gap: var(--sp-3);
-  align-items: flex-end;
-}
-.gb-round {
-  width: var(--gb-key);
-  height: var(--gb-key);
-  border-radius: 50%;
-  border: 1px solid var(--accent);
-  background: var(--bg-secondary);
-  color: var(--accent);
-  font-size: var(--fs-lg);
-  font-weight: 600;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color 0s, border-color 0s, background 0s;
-}
-/* A sits above B, as it does on the hardware */
-.gb-ab .gb-a { margin-bottom: var(--sp-4); }
-
 /* Applied by region.js rather than using :active, which is unreliable on
    iOS. Without a pressed state the console feels dead, since the native tap
    highlight is off. */
@@ -1712,11 +1670,6 @@ input[type="range"]::-moz-range-thumb {
   background: var(--bg);
   transform: translateY(1px);
 }
-
-/* start toggles these back on — see bootConsole() in region.js */
-.is-touch .region.show-plates .town-plate { display: flex; }
-.is-touch .region.show-plates .town-name { font-size: 0.58rem; }
-.is-touch .region.show-plates .town-role { display: none; }
 
 /* --- drawer --- */
 
@@ -1737,21 +1690,21 @@ input[type="range"]::-moz-range-thumb {
 .drawer[hidden] { display: none; }
 .drawer.open { transform: translateX(0); }
 
-/* On touch a full-width side panel covers the map, the header and the
-   console, which reads as a page transition rather than a dialogue box.
-   Bring it up from the bottom and stop it short of the console: dismissing
-   with B and confirming with A only works if the buttons stay reachable.
-   region.js writes --gb-h from the console's measured height. */
+/* On touch a full-height side panel covers the whole map, which reads as a
+   page transition rather than a dialogue box. Drop it in from the top
+   instead: it lands over the page header and the top of the map, leaving the
+   d-pad and the thumb that drives it clear, where a bottom sheet sat right
+   on them. Kept short so most of the game boy screen stays visible under it. */
 .is-touch .drawer {
-  top: auto;
+  top: 0;
   left: 0;
   right: 0;
-  bottom: var(--gb-h, 0px);
+  bottom: auto;
   width: 100%;
-  max-height: 55%;
+  max-height: 45%;
   border-left: none;
-  border-top: 1px solid var(--accent);
-  transform: translateY(100%);
+  border-bottom: 1px solid var(--accent);
+  transform: translateY(-100%);
 }
 .is-touch .drawer.open { transform: translateY(0); }
 
