@@ -804,6 +804,12 @@ window.KX = window.KX || {};
       regionEl.style.setProperty('--cam-h', Math.min(VIEW_H * cellH, availH) + 'px');
 
       if (umbreonEl) umbreonEl.hidden = true;   // no column to spare
+
+      // the drawer sits above the console rather than over it — dismissing
+      // with B and confirming with A only works if the buttons are reachable
+      var gb = document.getElementById('gb-console');
+      if (gb && page) page.style.setProperty('--gb-h', gb.offsetHeight + 'px');
+
       setCamera();
       return;
     }
@@ -921,6 +927,7 @@ window.KX = window.KX || {};
     setMode(storedMode(), { silent: true });
 
     buildTownButtons();
+    bootConsole();
 
     // borrow the umbreon from the blog section rather than duplicating
     // 23 lines of braille in the markup
@@ -991,6 +998,116 @@ window.KX = window.KX || {};
     }
   }
 
+  /* -----------------------------------------------------
+     Game boy console — the touch equivalent of the arrow keys
+     ----------------------------------------------------- */
+
+  // Press and hold to keep walking. STEP_MS (55) is the walk *animation*
+  // rate, far too fast for a thumb — 18 tiles a second crosses the map in
+  // five and retriggers an encounter check on every one. The GB overworld
+  // walks a tile in 267ms and runs in 133ms; this sits just under a run.
+  var HOLD_MS = 180;      // below ~150 a deliberate single tap double-fires
+  var REPEAT_MS = 110;
+
+  /**
+   * A. Walking onto a town already opens its panel, so this is confirm and
+   * re-open rather than enter: follow the panel's link if one is up,
+   * otherwise re-open the town underfoot, otherwise just look around.
+   */
+  function pressA() {
+    if (openTown && drawerBody) {
+      var go = drawerBody.querySelector('.drawer-go');
+      if (go) { go.click(); return; }
+    }
+    // 0, not the default 1 — match the 5x3 town footprint exactly
+    var t = townNear(sprite.x, sprite.y, 0);
+    if (t) { openDrawer(t); return; }
+    updateReadout(sprite.x, sprite.y);
+  }
+
+  function bootConsole() {
+    var gb = document.getElementById('gb-console');
+    if (!gb || !camOn) return;
+
+    var holdT = null, repT = null, downBtn = null, lastPointer = 0;
+
+    function stopRepeat() {
+      if (holdT) { clearTimeout(holdT); holdT = null; }
+      if (repT) { clearInterval(repT); repT = null; }
+      if (downBtn) { downBtn.classList.remove('is-down'); downBtn = null; }
+    }
+
+    function dispatch(btn) {
+      var mv = btn.getAttribute('data-move');
+      if (mv) {
+        var p = mv.split(',');
+        stepBy(+p[0], +p[1]);
+        return;
+      }
+      var act = btn.getAttribute('data-act');
+      if (act === 'a') pressA();
+      else if (act === 'b') closeDrawer();
+      else if (act === 'select') setMode(mode === 'tiles' ? 'ascii' : 'tiles');
+      // On a phone .town-plate is hidden and in tiles mode so is the marker,
+      // which leaves the towns unlabelled — start is the map screen.
+      else if (act === 'start') regionEl.classList.toggle('show-plates');
+    }
+
+    function btnFrom(e) {
+      return e.target && e.target.closest ? e.target.closest('.gb-key,.gb-round,.gb-pill') : null;
+    }
+
+    gb.addEventListener('pointerdown', function (e) {
+      if (!e.isPrimary) return;
+      var btn = btnFrom(e);
+      if (!btn) return;
+
+      // Suppresses the compatibility mouse events, the compatibility click,
+      // and the focus iOS would otherwise hand the button. The CSS
+      // touch-action: none is what stops the browser sitting on the gesture
+      // first while it decides whether you meant to scroll.
+      e.preventDefault();
+      lastPointer = Date.now();
+
+      stopRepeat();
+      downBtn = btn;
+      btn.classList.add('is-down');
+      // with the pointer captured, sliding a thumb off the button keeps it
+      // held — and we get pointercancel if the browser takes the gesture
+      if (btn.setPointerCapture) {
+        try { btn.setPointerCapture(e.pointerId); } catch (err) { /* not captured */ }
+      }
+
+      dispatch(btn);
+
+      // only the d-pad repeats; holding A would follow its link over and over
+      if (!btn.getAttribute('data-move')) return;
+      holdT = setTimeout(function () {
+        holdT = null;
+        repT = setInterval(function () { dispatch(btn); }, REPEAT_MS);
+      }, HOLD_MS);
+    });
+
+    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function (t) {
+      gb.addEventListener(t, stopRepeat);
+    });
+    // a backgrounded tab would otherwise walk on forever
+    window.addEventListener('blur', stopRepeat);
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) stopRepeat();
+    });
+
+    // Not a duplicate of the pointer path: preventDefault above kills the
+    // *compatibility* click, but VoiceOver's activate gesture and a keyboard
+    // Enter/Space each dispatch a synthetic one with no pointer sequence
+    // before it. Without this the console is unusable with a screen reader.
+    gb.addEventListener('click', function (e) {
+      if (Date.now() - lastPointer < 700) return;
+      var btn = btnFrom(e);
+      if (btn) dispatch(btn);
+    });
+  }
+
   /** Arrow keys / wasd — only while the map section is showing. */
   function onKey(e) {
     var page = document.getElementById('interactive');
@@ -1018,6 +1135,8 @@ window.KX = window.KX || {};
     boot: boot,
     /** Re-size the grid to its container. Safe to call before boot. */
     fit: fit,
+    /** One tile of manual movement, exactly as an arrow key does it. */
+    move: function (dx, dy) { boot(); stepBy(dx, dy); },
     refresh: fit,
     closeDrawer: closeDrawer,
     /** 'tiles' (pixel art, the default) or 'ascii'. Persisted. */

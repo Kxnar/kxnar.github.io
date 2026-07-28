@@ -1550,6 +1550,142 @@ input[type="range"]::-moz-range-thumb {
 }
 .region-readout .ro-key { color: var(--accent); }
 
+/* ===========================
+   GAME BOY CONSOLE  (touch only)
+
+   Drawn from the terminal tokens, not --px-*. Those exist because
+   region-tiles.js paints to a canvas and can't read a class, so it has to
+   read colours off :root, and they're theme-independent on purpose — grass
+   is green in both themes. This is site chrome, not map art: sourced from
+   --px-* it would be a bright plastic slab sitting under the --card-bg map
+   box and clashing with the light theme. Everything is square, as the rest
+   of the site is, except A and B — a circle is the strongest game boy
+   signifier there is and the site has no other circles, so it lands as
+   deliberate rather than sloppy.
+   =========================== */
+
+.gb-console { display: none; }
+
+.is-touch .gb-console {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  justify-items: center;
+  gap: var(--sp-4);
+  flex: 0 0 auto;
+  margin-top: var(--sp-4);
+  padding: var(--sp-4) var(--sp-3);
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  /* one number sizes the whole console */
+  --gb-key: clamp(38px, 12vw, 52px);
+}
+
+/* The gesture is ours, not the scroller's — without touch-action: none
+   Safari holds pointer events back ~300ms while it decides whether you meant
+   to scroll, then fires pointercancel mid-hold. Same reasoning as
+   .notes-graph-canvas. The rest stops the long-press callout and selection
+   magnifier; the tap highlight goes because .is-down replaces it. */
+.gb-console,
+.gb-console button {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.gb-dpad {
+  display: grid;
+  grid-template-columns: repeat(3, var(--gb-key));
+  grid-template-rows: repeat(3, var(--gb-key));
+}
+.gb-up { grid-area: 1 / 2; }
+.gb-left { grid-area: 2 / 1; }
+.gb-hub { grid-area: 2 / 2; }
+.gb-right { grid-area: 2 / 3; }
+.gb-down { grid-area: 3 / 2; }
+
+.gb-hub {
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.gb-key {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: var(--fs-md);
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0s, border-color 0s, background 0s;
+}
+/* the same four glyphs the ascii renderer gives the sprite */
+.gb-up::after { content: '\25B2'; }
+.gb-down::after { content: '\25BC'; }
+.gb-left::after { content: '\25C0'; }
+.gb-right::after { content: '\25B6'; }
+
+.gb-meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.gb-pill {
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-dim);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: var(--sp-2) var(--sp-4);
+  min-height: 30px;
+  transition: color 0s, border-color 0s, background 0s;
+}
+
+.gb-ab {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: flex-end;
+}
+.gb-round {
+  width: var(--gb-key);
+  height: var(--gb-key);
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  background: var(--bg-secondary);
+  color: var(--accent);
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0s, border-color 0s, background 0s;
+}
+/* A sits above B, as it does on the hardware */
+.gb-ab .gb-a { margin-bottom: var(--sp-4); }
+
+/* Applied by region.js rather than using :active, which is unreliable on
+   iOS. Without a pressed state the console feels dead, since the native tap
+   highlight is off. */
+.gb-console .is-down {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--bg);
+  transform: translateY(1px);
+}
+
+/* start toggles these back on — see bootConsole() in region.js */
+.is-touch .region.show-plates .town-plate { display: flex; }
+.is-touch .region.show-plates .town-name { font-size: 0.58rem; }
+.is-touch .region.show-plates .town-role { display: none; }
+
 /* --- drawer --- */
 
 .drawer {
@@ -1568,6 +1704,24 @@ input[type="range"]::-moz-range-thumb {
 }
 .drawer[hidden] { display: none; }
 .drawer.open { transform: translateX(0); }
+
+/* On touch a full-width side panel covers the map, the header and the
+   console, which reads as a page transition rather than a dialogue box.
+   Bring it up from the bottom and stop it short of the console: dismissing
+   with B and confirming with A only works if the buttons stay reachable.
+   region.js writes --gb-h from the console's measured height. */
+.is-touch .drawer {
+  top: auto;
+  left: 0;
+  right: 0;
+  bottom: var(--gb-h, 0px);
+  width: 100%;
+  max-height: 55%;
+  border-left: none;
+  border-top: 1px solid var(--accent);
+  transform: translateY(100%);
+}
+.is-touch .drawer.open { transform: translateY(0); }
 
 .drawer-head {
   display: flex;

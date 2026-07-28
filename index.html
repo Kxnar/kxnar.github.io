@@ -428,7 +428,7 @@
                only ever be one of it. -->
           <p class="page-sub">
             <span class="desk-only">click a town, or walk there with esc + arrow keys / wasd / hjkl. press `i` then type `toggle` to switch interactive mode, or press:</span>
-            <span class="touch-only">tap a town, or any tile, and i'll walk there. to change how the map is drawn, press:</span>
+            <span class="touch-only">tap a town, or any tile, and i'll walk there &mdash; or use the d-pad below. A enters a town, B closes the panel. to change how the map is drawn, press:</span>
             <button id="map-mode-toggle" class="status-link map-mode-btn" type="button"
                     aria-label="switch map renderer" aria-pressed="true"><span class="map-mode-label">ascii</span></button>
           </p>
@@ -447,6 +447,33 @@
             <nav class="region-towns" id="region-towns" aria-label="towns"></nav>
             <div class="region-readout" id="region-readout" aria-hidden="true"></div>
             <div class="region-flash" id="region-flash" aria-hidden="true"></div>
+          </div>
+        </div>
+
+        <!-- Game boy console. Shown only under .is-touch, where there are no
+             arrow keys; it duplicates the keydown handler in region.js and
+             the two coexist happily on a tablet with a keyboard attached.
+             data-no-type keeps the typing engine off it — it splits text
+             nodes into shown/hidden span pairs, which would tear the labels
+             out of their flex centring mid-reveal. -->
+        <div class="gb-console" id="gb-console" data-no-type>
+          <div class="gb-dpad" role="group" aria-label="move">
+            <button type="button" class="gb-key gb-up"    data-move="0,-1" aria-label="walk up"></button>
+            <button type="button" class="gb-key gb-left"  data-move="-1,0" aria-label="walk left"></button>
+            <span   class="gb-hub" aria-hidden="true"></span>
+            <button type="button" class="gb-key gb-right" data-move="1,0"  aria-label="walk right"></button>
+            <button type="button" class="gb-key gb-down"  data-move="0,1"  aria-label="walk down"></button>
+          </div>
+
+          <div class="gb-meta">
+            <button type="button" class="gb-pill" data-act="select" aria-label="select — change how the map is drawn">select</button>
+            <button type="button" class="gb-pill" data-act="start"  aria-label="start — show or hide town names">start</button>
+          </div>
+
+          <!-- B before A so tab order runs left to right, as they read -->
+          <div class="gb-ab" role="group" aria-label="actions">
+            <button type="button" class="gb-round gb-b" data-act="b" aria-label="B — close the panel">B</button>
+            <button type="button" class="gb-round gb-a" data-act="a" aria-label="A — enter the town you're standing on">A</button>
           </div>
         </div>
 
