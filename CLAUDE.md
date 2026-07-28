@@ -60,6 +60,16 @@ A single fixed-position block (`#vim-cursor`) follows the pointer and snaps to t
 
 A real `<input>` at the bottom. Commands live in the `COMMANDS` map in `script.js`; argument completions in `ARG_HINTS`. History persists to `localStorage` (`kx-history`). `Esc` blurs the input into "normal mode", where `1`-`5` switch section, `i`/`:` return to the prompt, and arrows/`hjkl` drive the carousel and the region map — that split is why the carousel and map key handlers bail when `e.target` is an `INPUT`.
 
+### Touch
+
+There is **one** mobile gate: `matchMedia('(hover: none) and (pointer: coarse)')`, evaluated by the same **inline `<head>` script** that applies the theme, and recorded as an `is-touch` class on `<html>`. It has to be inline and in the head for the same reason the theme does — a deferred script runs after first paint, and the mobile layout would flash as the desktop one.
+
+Everything mobile-specific keys off that class: CSS reads it directly (`.is-touch …`), JS reads it back as `KX.touch` rather than re-running `matchMedia`, so the two can never end up on different sides of the gate. `KX.touch` is sampled once at boot; nothing re-evaluates it, because a device does not grow a mouse mid-session.
+
+The gate is deliberately **not** a width breakpoint — a narrow desktop window keeps the command line and the full terminal. The existing `@media (max-width: 680px)` block is a separate, genuinely width-driven concern and the two are not interchangeable.
+
+Because no desktop browser can be talked into reporting a coarse pointer, `?touch` on the URL forces the class on and `?touch=0` forces it off. That is the only way to exercise the JS branches outside a real device (adding the class from the console is too late — `KX.touch` has already been read).
+
 ### Theming
 
 Dark/light via a `data-theme` attribute on `<html>`. All colours are CSS custom properties in `:root` (dark) overridden under `[data-theme="light"]` — new colour usage must reference these variables, never hardcoded values, so both themes stay correct. The choice persists to `localStorage` and is applied by a small **inline script in `<head>`**; it has to stay inline and in the head to beat first paint.

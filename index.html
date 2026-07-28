@@ -2,7 +2,10 @@
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- viewport-fit=cover is what makes env(safe-area-inset-*) resolve to
+       anything but 0px on a notched phone. Deliberately no user-scalable=no
+       or maximum-scale — pinch-zoom stays available. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
   <title>kxnar</title>
   <meta name="description" content="kenar narayaka — comp sci &amp; philosophy at christ church, oxford. fractals, logic, ai interpretability.">
@@ -22,7 +25,8 @@
 
   <link rel="stylesheet" href="style.css">
 
-  <!-- Applied before first paint so a light-mode visitor never sees a dark flash.
+  <!-- Applied before first paint so a light-mode visitor never sees a dark flash,
+       and so the mobile layout is never briefly the desktop one.
        This has to stay inline in <head>; deferred scripts run too late. -->
   <script>
     (function () {
@@ -31,6 +35,19 @@
         if (saved !== 'light' && saved !== 'dark') saved = 'dark';
         document.documentElement.setAttribute('data-theme', saved);
       } catch (e) { /* private mode — the dark default in the markup stands */ }
+
+      // The single mobile gate: a real touch device, not a narrow window.
+      // Everything mobile-specific keys off .is-touch — CSS directly, JS via
+      // KX.touch — so the two can never disagree.
+      // ?touch / ?touch=0 forces it either way, because a desktop browser
+      // can't be talked into reporting a coarse pointer and the JS side
+      // reads the class once, at boot, so setting it later is too late.
+      var forced = /[?&]touch(=([^&]*))?/.exec(location.search);
+      var on = forced
+        ? forced[2] !== '0' && forced[2] !== 'false'
+        : !!(window.matchMedia &&
+             window.matchMedia('(hover: none) and (pointer: coarse)').matches);
+      if (on) document.documentElement.classList.add('is-touch');
     })();
   </script>
 </head>

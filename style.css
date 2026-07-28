@@ -292,6 +292,12 @@ body.no-crt .term::after { display: none; }
   flex: 0 0 auto;
   overflow-x: auto;
   scrollbar-width: none;
+  /* The strip is wider than a phone and is meant to be swiped. Left to
+     itself a drag with any vertical component chains out to .term-main and
+     then to the document, so the whole page slews around under the thumb —
+     pin the gesture to this axis and stop it escaping. */
+  touch-action: pan-x;
+  overscroll-behavior-x: contain;
 }
 .term-tabs::-webkit-scrollbar { display: none; }
 
@@ -308,6 +314,11 @@ body.no-crt .term::after { display: none; }
   position: relative;
   /* instant, like a real tab strip — no fade */
   transition: color 0s, background 0s;
+  /* these are anchors: without this a long-press pops the iOS link preview
+     or drops selection handles, either of which then drags the page */
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .tab-num {
@@ -341,11 +352,16 @@ body.no-crt .term::after { display: none; }
   min-height: 0;
 }
 
+/* There are six nested scroll containers in here. overscroll-behavior stops
+   a flick that runs off the end of one from handing the rest of the gesture
+   to its parent and, eventually, to the document — which on a phone reads as
+   the page sliding around for no reason. */
 .term-main {
   flex: 1 1 auto;
   min-width: 0;
   overflow-y: auto;
   overflow-x: hidden;
+  overscroll-behavior: contain;
   padding: var(--sp-8);
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
@@ -394,6 +410,7 @@ body.no-crt .term::after { display: none; }
 .side-log {
   flex: 1 1 auto;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: var(--sp-4);
   font-size: var(--fs-md);
   line-height: 1.65;
@@ -437,6 +454,7 @@ body.no-crt .term::after { display: none; }
      Everything except `cd` prints into the side pane instead. */
   max-height: 3.9rem;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 0 var(--sp-8);
   font-size: var(--fs-md);
   line-height: 1.65;
@@ -506,6 +524,7 @@ body.no-crt .term::after { display: none; }
   color: var(--text-dim);
   letter-spacing: var(--track);
   overflow-x: auto;
+  overscroll-behavior-x: contain;
   scrollbar-width: none;
 }
 .term-status::-webkit-scrollbar { display: none; }
@@ -1493,6 +1512,7 @@ input[type="range"]::-moz-range-thumb {
 .drawer-body {
   flex: 1;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: var(--sp-5);
   scrollbar-width: thin;
 }
@@ -1594,6 +1614,13 @@ input[type="range"]::-moz-range-thumb {
 
   .status-path,
   .status-pos { display: none; }
+
+  /* .term-status is the last element in .term, so the home-indicator inset
+     belongs here and nowhere else. Needs viewport-fit=cover on the meta tag
+     or env() is 0px and this is a no-op. */
+  .term-status {
+    padding-bottom: calc(var(--sp-2) + env(safe-area-inset-bottom, 0px));
+  }
 
   #frac-art { height: 170px; }
 
