@@ -765,9 +765,8 @@ window.KX = window.KX || {};
         '<span data-no-type>  █        █   </span>host     christ church, oxford\n' +
         '<span data-no-type>  █        █   </span>course   comp sci ∧ philosophy\n' +
         '<span data-no-type>  ▀▀▀▀▀▀▀▀▀▀   </span>shell    zsh 5.9.2\n' +
-        '<span data-no-type>               </span>theme    ' + t + '\n' +
-        '<span data-no-type>               </span>theme    ' + t + '\n' +
-        '<span data-no-type>               </span>fractals ' + (KX.fractals ? KX.fractals.list().length : 0) + ' loaded',
+        '<span data-no-type>               </span>kernel   Linux 7.1.4-arch1-1\n' +
+        '<span data-no-type>               </span>theme    ' + t + '\n',
         'dim', true);
     },
 

@@ -634,14 +634,14 @@ window.KX = window.KX || {};
 
   var WILD = ['umbreon', 'zubat', 'oddish', 'rattata', 'ponyta', 'gastly'];
 
-  var ENCOUNTER_CHANCE = 0.12;
+  var ENCOUNTER_CHANCE = 0.35;
   var ENCOUNTER_COOLDOWN = 2000;   // ms — crossing a big patch shouldn't spam
   var ENCOUNTER_SHOWN = 1600;
 
   var flashEl, critterEl, flashTimer = null, lastEncounter = 0;
 
   function maybeEncounter(x, y) {
-    if (!flashEl || at(x, y) !== TALL || reduceMotion()) return;
+    if (!flashEl || at(x, y) !== TALL) return;
 
     var now = Date.now();
     if (now - lastEncounter < ENCOUNTER_COOLDOWN) return;
@@ -1045,12 +1045,11 @@ window.KX = window.KX || {};
         return;
       }
       var act = btn.getAttribute('data-act');
-      if (act === 'a') pressA();
+      if (act === 'a') regionEl.classList.toggle('show-plates');
       else if (act === 'b') closeDrawer();
-      else if (act === 'select') setMode(mode === 'tiles' ? 'ascii' : 'tiles');
-      // On a phone .town-plate is hidden and in tiles mode so is the marker,
+      else if (act === 'select') pressA();      // On a phone .town-plate is hidden and in tiles mode so is the marker,
       // which leaves the towns unlabelled — start is the map screen.
-      else if (act === 'start') regionEl.classList.toggle('show-plates');
+      else if (act === 'start') setMode(mode === 'tiles' ? 'ascii' : 'tiles');
     }
 
     function btnFrom(e) {
