@@ -441,7 +441,11 @@ body.no-crt .term::after { display: none; }
    height, stage takes the rest, and region.js sizes the grid to fit. */
 .term-main.map-mode {
   padding: var(--sp-4);
+  /* clip rather than hidden for the same reason as .region — hidden makes
+     this a scroll container that an off-screen .town button can be scrolled
+     into. The hidden line is the pre-16 Safari fallback. */
   overflow: hidden;
+  overflow: clip;
 }
 .map-page.active {
   display: flex;
@@ -1286,7 +1290,53 @@ input[type="range"]::-moz-range-thumb {
   width: max-content;
   max-width: 100%;
   flex: 0 0 auto;
+  /* The camera offset, in px, written by region.js's setCamera(). Zero here
+     and only ever non-zero on touch, which is what lets the layer transforms
+     below subtract it unconditionally. */
+  --cam-x: 0px;
+  --cam-y: 0px;
 }
+
+/* --- the game boy screen (touch only) ---
+   .region becomes a fixed 20x18-tile window and the world scrolls under it.
+   region.js sizes the box from the cell geometry it just handed out; see the
+   camera block in region.js for why the renderers need no camera of their own. */
+.is-touch .region {
+  box-sizing: content-box;
+  width: var(--cam-w, 320px);
+  height: var(--cam-h, 288px);
+  max-width: none;
+  /* clip, not hidden: hidden makes this a scroll container, and the .town
+     buttons are focusable <button>s sitting up to 1500px outside the window.
+     closeDrawer() restores focus to one, the browser scrolls it into view,
+     and that scroll offset then composes with the camera transform and
+     displaces the map for good. `clip` has no scroll position to set.
+     The hidden line is the fallback for pre-16 Safari. */
+  overflow: hidden;
+  overflow: clip;
+}
+
+/* The world layers. The three that already carry a translate3d only lose the
+   camera offset; the canvas and the grid get one, and only on touch — adding
+   a transform to the <pre> on desktop would promote it to its own layer and
+   flip the ascii text to grayscale antialiasing for nothing. */
+.is-touch .region-canvas,
+.is-touch .region-grid {
+  transform: translate3d(calc(-1 * var(--cam-x)), calc(-1 * var(--cam-y)), 0);
+}
+
+/* Mid-map the sprite holds still while the world moves, so the world has to
+   ease exactly as the sprite does (.region-sprite, below) or it hard-snaps a
+   whole tile every STEP_MS. At a clamped map edge it is the other way round.
+   Transitioning --cam-x itself would need @property, which Safari only got
+   in 16.4 — and its failure mode there is the silent hard jump this avoids. */
+.is-touch .region-canvas,
+.is-touch .region-grid,
+.is-touch .town { transition: color 0s, transform 0.06s linear; }
+
+/* the window is a fixed box now, so centre it in the height fit() leaves
+   rather than pinning it to the top with dead space underneath */
+.is-touch .region-stage { align-items: center; }
 
 .region-umbreon {
   flex: 0 0 auto;
@@ -1351,8 +1401,8 @@ input[type="range"]::-moz-range-thumb {
   align-items: center;
   justify-content: center;
   transform: translate3d(
-    calc(var(--sx, 0) * var(--cell-w, 7px)),
-    calc(var(--sy, 0) * var(--cell-h, 12px)),
+    calc(var(--sx, 0) * var(--cell-w, 7px) - var(--cam-x, 0px)),
+    calc(var(--sy, 0) * var(--cell-h, 12px) - var(--cam-y, 0px)),
     0
   );
   transition: transform 0.06s linear;
@@ -1389,8 +1439,8 @@ input[type="range"]::-moz-range-thumb {
   opacity: 0;
   transition: opacity 0.12s linear;
   transform: translate3d(
-    calc(var(--sx, 0) * var(--cell-w, 7px)),
-    calc(var(--sy, 0) * var(--cell-h, 12px)),
+    calc(var(--sx, 0) * var(--cell-w, 7px) - var(--cam-x, 0px)),
+    calc(var(--sy, 0) * var(--cell-h, 12px) - var(--cam-y, 0px)),
     0
   );
 }
@@ -1431,8 +1481,8 @@ input[type="range"]::-moz-range-thumb {
   top: 0;
   /* centre the marker on its tile, then shift left by half the plate width */
   transform: translate3d(
-    calc(var(--x) * var(--cell-w, 7px) + var(--cell-w, 7px) / 2),
-    calc(var(--y) * var(--cell-h, 12px)),
+    calc(var(--x) * var(--cell-w, 7px) + var(--cell-w, 7px) / 2 - var(--cam-x, 0px)),
+    calc(var(--y) * var(--cell-h, 12px) - var(--cam-y, 0px)),
     0
   ) translateX(-50%);
   display: flex;
@@ -1661,7 +1711,11 @@ input[type="range"]::-moz-range-thumb {
   /* fallback until region.js fit() sets an inline size */
   .region-grid { font-size: 5px; }
   .region { padding: var(--sp-2); }
+  /* .region-critter shares the grid-positioning contract with the trainer,
+     so it has to be re-anchored with him or the encounter sprite sits a
+     third of a tile off */
   .region-sprite,
+  .region-critter,
   .region-towns { top: var(--sp-2); left: var(--sp-2); }
   .region-readout { left: var(--sp-2); bottom: var(--sp-2); }
   .town-plate { display: none; }
@@ -1685,6 +1739,15 @@ input[type="range"]::-moz-range-thumb {
   #vim-cursor.blink { animation: none; }
   .drawer,
   .region-sprite { transition: none; }
+
+  /* The camera has to stop moving with the sprite, never independently of
+     it. These need the .is-touch prefix to match the specificity of the rule
+     that sets the transition, or they lose to it and fall back to the
+     blanket !important above — which zeroes the duration but leaves
+     transition-property set, and still fires transition events. */
+  .is-touch .region-canvas,
+  .is-touch .region-grid,
+  .is-touch .town { transition: none; }
 
   /* The typing reveal deliberately ignores this preference (it moves
      nothing), so its caret has to keep blinking — a frozen caret reads

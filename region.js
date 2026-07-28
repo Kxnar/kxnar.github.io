@@ -332,6 +332,11 @@ window.KX = window.KX || {};
      * or the sprite and town markers drift off their tiles.
      */
     layout: function (budgetW, availH) {
+      // a non-positive budget would make this an invalid font-size, which is
+      // dropped silently — leaving the measurement below reading a stale box
+      budgetW = Math.max(1, budgetW);
+      availH = Math.max(1, availH);
+
       var fs = Math.min(availH / (H * LINE_H), budgetW / (W * CHAR_W));
       gridEl.style.fontSize = fs + 'px';
 
@@ -486,6 +491,45 @@ window.KX = window.KX || {};
   // rate — much below ~40 and the pixel renderer's walk cycle is a blur.
   var STEP_MS = 55;
 
+  /* -----------------------------------------------------
+     Camera — a game boy screen over a bigger world
+
+     All 96 columns will not fit a phone: the tile renderer bottoms out at
+     MIN_CELL and draws a 288px-wide map in a 400px-tall box. So on touch
+     .region is clipped to a 20x18 window — the DMG's 160x144 screen at
+     8px/tile — and every map-anchored layer is translated by --cam-x /
+     --cam-y underneath it. Desktop leaves both at 0px, which is why the
+     same transforms can sit unconditionally in the stylesheet.
+     ----------------------------------------------------- */
+
+  var VIEW_W = 20, VIEW_H = 18;
+
+  // the DMG scrolls to keep the player at px (72,64) of 160x144 — tile (9,8).
+  // floor(VIEW_W / 2) would be a column off.
+  var CAM_CX = 9, CAM_CY = 8;
+
+  var camOn = false;            // boot() reads this off the .is-touch class
+  var cellW = 0, cellH = 0;     // the geometry fit() last handed out
+
+  function clampCam(v, span) {
+    if (span < 0) span = 0;
+    return v < 0 ? 0 : v > span ? span : v;
+  }
+
+  /**
+   * Centre the window on the sprite, clamped so it never runs off the world.
+   * Quantised to whole tiles: a fractional offset would put an
+   * image-rendering:pixelated canvas on fractional device pixels and the art
+   * would crawl as it scrolled.
+   */
+  function setCamera() {
+    if (!camOn || !regionEl || !sprite) return;   // fit() runs before sprite exists
+    var cx = clampCam(sprite.x - CAM_CX, W - VIEW_W);
+    var cy = clampCam(sprite.y - CAM_CY, H - VIEW_H);
+    regionEl.style.setProperty('--cam-x', (cx * cellW) + 'px');
+    regionEl.style.setProperty('--cam-y', (cy * cellH) + 'px');
+  }
+
   function placeSprite(x, y, dir) {
     sprite.x = x;
     sprite.y = y;
@@ -494,6 +538,10 @@ window.KX = window.KX || {};
     spriteEl.style.setProperty('--sy', y);
     // each renderer reads `frame` its own way; only the look differs
     active.sprite(spriteEl, sprite.dir, frame);
+    // Here rather than in the callers, so --sx and --cam-x always land in
+    // the same task: a style flush between them shows the sprite a tile out
+    // of place for a frame.
+    setCamera();
   }
 
   function stopWalk() {
@@ -733,14 +781,46 @@ window.KX = window.KX || {};
                   (parseFloat(rcs.borderTopWidth) || 0) + (parseFloat(rcs.borderBottomWidth) || 0);
 
     var availH = Math.max(160, stageH - chromeV);
+    var budgetW = stageW - chrome;
+    var geo;
 
-    // provisional: fill the stage, and see what's left for the umbreon
+    // --- camera path: size for a 20x18 window, not the whole world ---
+    if (camOn) {
+      // Both renderers reduce their layout to min(availH / H, budgetW / W),
+      // so scaling each budget by the ratio of the world to the window makes
+      // W and H cancel and leaves min(availH / VIEW_H, budgetW / VIEW_W).
+      // The renderers need no camera of their own — they still draw and
+      // measure the full map, we just clip what shows.
+      geo = active.layout(budgetW * (W / VIEW_W), availH * (H / VIEW_H), MAP);
+      cellW = geo.cellW;
+      cellH = geo.cellH;
+
+      regionEl.style.setProperty('--cell-w', cellW + 'px');
+      regionEl.style.setProperty('--cell-h', cellH + 'px');
+      // JS owns the clamp rather than CSS: ascii cells are fractional and
+      // JetBrains Mono's real advance ratio is only near CHAR_W, so a
+      // calc() in the stylesheet could overflow the stage by a pixel or two
+      regionEl.style.setProperty('--cam-w', Math.min(VIEW_W * cellW, budgetW) + 'px');
+      regionEl.style.setProperty('--cam-h', Math.min(VIEW_H * cellH, availH) + 'px');
+
+      if (umbreonEl) umbreonEl.hidden = true;   // no column to spare
+      setCamera();
+      return;
+    }
+
+    // --- desktop: fill the stage, and give what's left to the umbreon ---
     var GAP = 24;                                        // the stage gap
     var reserved = stageW - UMBREON_MIN - GAP - chrome;
-    var geo = active.layout(stageW - chrome, availH, MAP);
+    geo = active.layout(budgetW, availH, MAP);
     var showUmb = false;
 
-    if (umbreonEl) {
+    // Below this there is no column to compete for, and `reserved` has gone
+    // negative — which the ascii renderer turns into an invalid font-size
+    // that is silently dropped, leaving it to measure and return the stale
+    // box it still has.
+    var canUmb = !!umbreonEl && reserved >= 160;
+
+    if (canUmb) {
       if (stageW - (geo.width + chrome) - GAP >= UMBREON_MIN) {
         showUmb = true;
         geo = active.layout(reserved, availH, MAP);
@@ -754,13 +834,15 @@ window.KX = window.KX || {};
           showUmb = true;
           geo = geoUmb;
         } else {
-          geo = active.layout(stageW - chrome, availH, MAP);
+          geo = active.layout(budgetW, availH, MAP);
         }
       }
     }
 
-    regionEl.style.setProperty('--cell-w', geo.cellW + 'px');
-    regionEl.style.setProperty('--cell-h', geo.cellH + 'px');
+    cellW = geo.cellW;
+    cellH = geo.cellH;
+    regionEl.style.setProperty('--cell-w', cellW + 'px');
+    regionEl.style.setProperty('--cell-h', cellH + 'px');
 
     if (umbreonEl) {
       umbreonEl.hidden = !showUmb;
@@ -830,6 +912,7 @@ window.KX = window.KX || {};
     if (!regionEl || !gridEl) return;
 
     booted = true;
+    camOn = document.documentElement.classList.contains('is-touch');
 
     build();
 
@@ -889,7 +972,18 @@ window.KX = window.KX || {};
     var closeBtn = document.getElementById('drawer-close');
     if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
 
-    window.addEventListener('resize', fit);
+    // Debounced: .term is 100dvh, so iOS fires resize continuously while the
+    // URL bar collapses, and each fit() restyles the canvas.
+    var fitTimer = null;
+    window.addEventListener('resize', function () {
+      clearTimeout(fitTimer);
+      fitTimer = setTimeout(fit, 120);
+    });
+    // a rotate reports the pre-rotation size on the resize that accompanies
+    // it, so re-fit once the new geometry has settled
+    window.addEventListener('orientationchange', function () {
+      setTimeout(fit, 250);
+    });
 
     // fonts can land after first paint and change the cell size
     if (document.fonts && document.fonts.ready) {

@@ -774,6 +774,9 @@ window.KX = window.KX || {};
      * Returns the geometry region.js needs for --cell-w / --cell-h.
      */
     layout: function (budgetW, availH, MAP) {
+      budgetW = Math.max(1, budgetW);
+      availH = Math.max(1, availH);
+
       var cell = Math.floor(Math.min(availH / MAP.H, budgetW / MAP.W));
       cell = Math.max(MIN_CELL, Math.min(MAX_CELL, cell));
       cellPx = cell;
