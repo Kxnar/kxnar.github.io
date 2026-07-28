@@ -37,7 +37,7 @@ window.KX = window.KX || {};
     { id: 'interactive', path: '~/interactive', label: 'interactive' },
     { id: 'education',   path: '~/education',   label: 'education' },
     { id: 'projects',    path: '~/projects',    label: 'projects' },
-    { id: 'blog',        path: '~/blog',        label: 'blog' },
+    { id: 'blog',        path: '~/blog',        label: 'blog' }
   ];
 
   function routeById(id) {
