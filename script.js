@@ -97,14 +97,6 @@ window.KX = window.KX || {};
       notes: 'intro-to-logic',
       desc: 'propositional and first-order logic — formalisation, truth tables, natural deduction, validity and soundness.'
     },
-
-    {
-      code: 'phil.ptlp',
-      name: 'philosophical topics in logic and probability',
-      term: "hilary '26",
-      notes: 'logic-and-probability',
-      desc: 'what the formal machinery actually means — interpretations of probability, conditionals, and the paradoxes of confirmation.'
-    },
     {
       code: 'cs.daa',
       name: 'design & analysis of algorithms',
@@ -119,6 +111,14 @@ window.KX = window.KX || {};
       notes: 'imperative-programming',
       desc: 'state, arrays and loops, invariants and program correctness, data structures, reasoning about imperative code.'
     },
+    {
+      code: 'phil.ptlp',
+      name: 'philosophical topics in logic and probability',
+      term: "hilary '26",
+      notes: 'logic-and-probability',
+      desc: 'what the formal machinery actually means — interpretations of probability, conditionals, and the paradoxes of confirmation.'
+    },
+    
 
     {
       code: 'cs.ips',
@@ -144,13 +144,7 @@ window.KX = window.KX || {};
       desc: 'idk i havent done it yet it seems very familiar to alan turing on computability'
     },
 
-    {
-      code: 'phil.kr',
-      name: 'knowledge & reality',
-      term: "michaelmas '26",
-      notes: 'knowledge-reality',
-      desc: "idk i haven't done it yet"
-    },
+   
 
     {
       code: 'cs.la',
@@ -159,7 +153,13 @@ window.KX = window.KX || {};
       notes: 'linear-algebra',
       desc: 'eigenvectors n shi'
     },
-
+ {
+      code: 'phil.kr',
+      name: 'knowledge & reality',
+      term: "michaelmas '26",
+      notes: 'knowledge-reality',
+      desc: "idk i haven't done it yet"
+    },
     {
       code: 'cs.ads',
       name: 'algorithms & data structures',
