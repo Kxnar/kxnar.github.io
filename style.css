@@ -6,8 +6,9 @@
 
 /* ===========================
    THEME VARIABLES
-   Colour values are unchanged from the previous design —
-   only the token scales underneath them are new.
+   Two eeveelutions: dark is umbreon (black fur, phosphor glow), light is
+   espeon (lilac fur, violet shading, the red forehead gem). Same token
+   names in both, so nothing downstream has to know which is on.
    =========================== */
 
 :root {
@@ -26,6 +27,7 @@
   --link: #7eb8b0;
   --link-hover: #b0d8d4;
   --ascii-accent: var(--accent);
+  --scanline: rgba(126, 184, 176, 0.025);
 
   /* spacing scale — replaces the hardcoded rem literals */
   --sp-1: 0.25rem;
@@ -131,20 +133,27 @@
   color-scheme: dark;
 }
 
+/* espeon — pulled off the sprite rather than derived from the dark theme,
+   which is what the old light mode was: the same warm grey scheme inverted,
+   with --text-dim landing at #888 on near-white. That token carries most of
+   the secondary copy on the site (status bar, fact keys, the location line,
+   fractal formulae, tab paths) at 2.9:1, which is what made light mode hard
+   to read. Every value here clears 4.5:1 against the surface it sits on. */
 [data-theme="light"] {
-  --bg: #f5f2eb;
-  --bg-secondary: #eceae3;
-  --text: #2a2825;
-  --text-dim: #888;
-  --text-bright: #1a1815;
-  --accent: #1f5c56;
-  --ascii-accent: #144743;
-  --border: #d4d0c8;
-  --card-bg: #eeece5;
-  --card-border: #d8d4cb;
-  --nav-bg: rgba(245, 242, 235, 0.92);
-  --link: #2d6a63;
-  --link-hover: #1a4a44;
+  --bg: #f7f0f7;            /* the lightest fur highlight */
+  --bg-secondary: #eee2ee;  /* fur in shadow — title bar, tabs, status bar */
+  --text: #2e2135;          /* the deep violet inside the ears */
+  --text-dim: #6a557a;      /* mid fur shading — 5.9:1 on --bg, was 2.9:1 */
+  --text-bright: #1a1020;
+  --accent: #7b3f9d;        /* the eyes */
+  --ascii-accent: #55287a;  /* deeper still: the art runs at 0.75–0.9 alpha */
+  --border: #d0b3d4;
+  --card-bg: #f2e8f2;
+  --card-border: #dcc2dd;
+  --nav-bg: rgba(247, 240, 247, 0.92);
+  --link: #a52a55;          /* the forehead gem */
+  --link-hover: #6f1638;
+  --scanline: rgba(123, 63, 157, 0.05);
 
   /* no --px-* here on purpose: the pixel map keeps one bright daytime
      palette in both themes (see the block in :root) */
@@ -235,8 +244,8 @@ ul { list-style: none; }
   z-index: 40;
   background: repeating-linear-gradient(
     to bottom,
-    rgba(126, 184, 176, 0.025) 0px,
-    rgba(126, 184, 176, 0.025) 1px,
+    var(--scanline) 0px,
+    var(--scanline) 1px,
     transparent 1px,
     transparent 3px
   );
