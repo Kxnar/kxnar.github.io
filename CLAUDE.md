@@ -82,6 +82,10 @@ Copy that differs by device is written twice in the markup and switched by the `
 
 Dark/light via a `data-theme` attribute on `<html>`. All colours are CSS custom properties in `:root` (dark) overridden under `[data-theme="light"]` — new colour usage must reference these variables, never hardcoded values, so both themes stay correct. The choice persists to `localStorage` and is applied by a small **inline script in `<head>`**; it has to stay inline and in the head to beat first paint.
 
+The two themes are the two eeveelutions: dark is **umbreon** (black fur, the ring glow as phosphor teal), light is **espeon** — lilac fur for the surfaces, the deep ear/eye violet for text and chrome, the forehead gem for links. Light is drawn from the sprite, not derived from dark by inversion, which is what the previous warm-grey light mode was: `--text-dim` landed at `#888` on near-white (2.9:1) while carrying most of the secondary copy on the site, and that is what made it unreadable. Keep every light value at 4.5:1 or better against the surface it sits on — `--text-dim` in particular, since it is the second most-used token in the stylesheet.
+
+Note that the pixel map's `--px-*` palette is exempt from all of this (see the region map section), and the CRT scanline tint is `--scanline`, a token like any other — it is the one overlay whose colour isn't a text colour, so it's easy to miss.
+
 ### ASCII fractal carousel
 
 `fractals.js` exposes a `FRACTALS` array of `{ id, name, formula, render(el, cols, rows) }`. Adding one means writing a `render` and appending an entry — the carousel, the counter, the `fractal` command and the detail slider all pick it up automatically.
