@@ -146,7 +146,7 @@
   --text-dim: #6a557a;      /* mid fur shading — 5.9:1 on --bg, was 2.9:1 */
   --text-bright: #1a1020;
   --accent: #7b3f9d;        /* the eyes */
-  --ascii-accent: #55287a;  /* deeper still: the art runs at 0.75–0.9 alpha */
+  ---accent: #55287a;  /* deeper still: the art runs at 0.75–0.9 alpha */
   --border: #d0b3d4;
   --card-bg: #f2e8f2;
   --card-border: #dcc2dd;
@@ -746,7 +746,7 @@ body.no-crt .term::after { display: none; }
 }
 
 /* the terminal can get very wide now — keep the prose to a readable measure
-   and let the rail absorb the rest, which is what centres the ascii art */
+   and let the rail absorb the rest, which is what centres the  art */
 .bio {
   min-width: 0;
   max-width: 78ch;
@@ -879,7 +879,7 @@ body.no-crt .term::after { display: none; }
    (29x23 against 47x23), so only the type size is shared. */
 .ascii-art.umbreon,
 .ascii-art.espeon {
-  font-size: 6px;
+  font-size: 13px;
   line-height: 1.05;
   opacity: 0.75;
   margin-top: var(--sp-5);
