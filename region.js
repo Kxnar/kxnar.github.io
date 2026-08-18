@@ -746,18 +746,26 @@ window.KX = window.KX || {};
      ----------------------------------------------------- */
 
   var booted = false;
-  var gridEl, regionEl, stageEl, umbreonEl;
+  var gridEl, regionEl, stageEl, eeveeEl;
 
   // must match .region-grid's line-height, and JetBrains Mono's advance ratio
   var CHAR_W = 0.6;
   var LINE_H = 1.05;
 
-  // below this the umbreon column isn't worth keeping
-  var UMBREON_MIN = 600;
+  // below this the eevee column isn't worth keeping
+  var EEVEE_MIN = 600;
+
+  // The eevee art's advance ratio, which is not CHAR_W: braille isn't in
+  // JetBrains Mono, so those glyphs come from whatever the system falls back
+  // to — about 0.72 here against JetBrains' 0.6, and not the same face on
+  // every platform. This only has to be close; fit() measures what actually
+  // rendered and corrects, and the old hardcoded `29 * CHAR_W` got away with
+  // being a fifth out only because the umbreon is height-limited anyway.
+  var ART_CHAR_W = 0.72;
 
   /**
    * Size the map to fill its container, then give whatever width is left over
-   * to the umbreon. The renderer decides how it fills the budget it's handed
+   * to the eevee. The renderer decides how it fills the budget it's handed
    * (font-size for ascii, an integer tile scale for pixels) and reports back
    * the cell geometry the sprite and town overlays position off.
    * Re-run on resize and whenever the side terminal opens or closes.
@@ -803,37 +811,37 @@ window.KX = window.KX || {};
       regionEl.style.setProperty('--cam-w', Math.min(VIEW_W * cellW, budgetW) + 'px');
       regionEl.style.setProperty('--cam-h', Math.min(VIEW_H * cellH, availH) + 'px');
 
-      if (umbreonEl) umbreonEl.hidden = true;   // no column to spare
+      if (eeveeEl) eeveeEl.hidden = true;   // no column to spare
 
       setCamera();
       return;
     }
 
-    // --- desktop: fill the stage, and give what's left to the umbreon ---
+    // --- desktop: fill the stage, and give what's left to the eevee ---
     var GAP = 24;                                        // the stage gap
-    var reserved = stageW - UMBREON_MIN - GAP - chrome;
+    var reserved = stageW - EEVEE_MIN - GAP - chrome;
     geo = active.layout(budgetW, availH, MAP);
-    var showUmb = false;
+    var showEevee = false;
 
     // Below this there is no column to compete for, and `reserved` has gone
     // negative — which the ascii renderer turns into an invalid font-size
     // that is silently dropped, leaving it to measure and return the stale
     // box it still has.
-    var canUmb = !!umbreonEl && reserved >= 160;
+    var canEevee = !!eeveeEl && reserved >= 160;
 
-    if (canUmb) {
-      if (stageW - (geo.width + chrome) - GAP >= UMBREON_MIN) {
-        showUmb = true;
+    if (canEevee) {
+      if (stageW - (geo.width + chrome) - GAP >= EEVEE_MIN) {
+        showEevee = true;
         geo = active.layout(reserved, availH, MAP);
       } else {
         // Square pixel tiles fill the stage edge to edge where the ascii grid
-        // leaves slack, which would cost the umbreon its column on any normal
+        // leaves slack, which would cost the eevee its column on any normal
         // window. Give a little of the map back instead — but not so much that
         // the map itself becomes the compromise.
-        var geoUmb = active.layout(reserved, availH, MAP);
-        if (geoUmb.width > 0 && geoUmb.cellH >= geo.cellH * 0.75) {
-          showUmb = true;
-          geo = geoUmb;
+        var geoEevee = active.layout(reserved, availH, MAP);
+        if (geoEevee.width > 0 && geoEevee.cellH >= geo.cellH * 0.75) {
+          showEevee = true;
+          geo = geoEevee;
         } else {
           geo = active.layout(budgetW, availH, MAP);
         }
@@ -845,13 +853,48 @@ window.KX = window.KX || {};
     regionEl.style.setProperty('--cell-w', cellW + 'px');
     regionEl.style.setProperty('--cell-h', cellH + 'px');
 
-    if (umbreonEl) {
-      umbreonEl.hidden = !showUmb;
-      if (showUmb) {
-        var actualLeft = stageW - (geo.width + chrome) - GAP;
-        // 29 columns wide, 23 rows tall — fit it to the narrower of the two
-        var ufs = Math.min(actualLeft / (29 * CHAR_W), availH / (23 * LINE_H));
-        umbreonEl.style.fontSize = ufs + 'px';
+    if (eeveeEl) {
+      eeveeEl.hidden = !showEevee;
+      if (showEevee) {
+        // What the map actually took, not what the renderer predicted it
+        // would: both renderers size in whole cells off an assumed advance
+        // ratio, and the tens of pixels they leave on the table are invisible
+        // until an art wide enough to spend the whole column shows up.
+        //
+        // Measured with the column out of the flex line. .region shrinks to
+        // make room for an oversized sibling, so measuring it while the eevee
+        // still carries the previous fit's font-size reads a map that is too
+        // narrow, hands the difference back to the eevee, and the two feed
+        // each other wider every time the theme flips.
+        eeveeEl.hidden = true;
+        // floored for the same reason the ascii renderer floors its budget: a
+        // non-positive font-size is dropped silently, leaving the art at
+        // whatever size it already had
+        var actualLeft = Math.max(1, stageW - regionEl.getBoundingClientRect().width - GAP);
+        eeveeEl.hidden = false;
+        // The column holds both eeveelutions and CSS shows whichever matches
+        // the theme, so size them both — they are different shapes (umbreon
+        // 29x23, espeon 47x23) and one of them is always the hidden one. Each
+        // carries its own grid on data-cols/data-rows; fit to the narrower of
+        // width and height.
+        var arts = eeveeEl.getElementsByTagName('pre');
+        for (var ai = 0; ai < arts.length; ai++) {
+          var cols = +arts[ai].getAttribute('data-cols');
+          var rows = +arts[ai].getAttribute('data-rows');
+          if (!cols || !rows) continue;
+          var fs = Math.min(actualLeft / (cols * ART_CHAR_W), availH / (rows * LINE_H));
+          arts[ai].style.fontSize = fs + 'px';
+          // Then correct against what actually rendered, because no ratio
+          // survives contact with a fallback font: the box of a <pre> in this
+          // column is its own max-content width, so it is the art's true
+          // width. A display:none art measures zero and keeps the estimate —
+          // it is corrected the moment it becomes the visible one, which is
+          // why setTheme re-fits.
+          var drawn = arts[ai].getBoundingClientRect().width;
+          if (drawn > actualLeft) {
+            arts[ai].style.fontSize = (fs * actualLeft / drawn) + 'px';
+          }
+        }
       }
     }
   }
@@ -924,15 +967,17 @@ window.KX = window.KX || {};
     buildTownButtons();
     bootConsole();
 
-    // borrow the umbreon from the blog section rather than duplicating
-    // 23 lines of braille in the markup
-    var source = document.querySelector('#blog .umbreon');
+    // borrow the eeveelution pair from the blog section rather than
+    // duplicating 46 lines of braille in the markup. Both come along and CSS
+    // shows the one matching the theme, so the column swaps with everything
+    // else and nothing here has to know which theme is on.
+    var source = document.querySelector('#blog .eevee');
     if (source && stageEl) {
-      umbreonEl = source.cloneNode(true);
-      umbreonEl.removeAttribute('id');
-      umbreonEl.className = 'ascii-art umbreon region-umbreon';
-      umbreonEl.hidden = true;
-      stageEl.appendChild(umbreonEl);
+      eeveeEl = source.cloneNode(true);
+      eeveeEl.removeAttribute('id');
+      eeveeEl.className = 'eevee region-eevee';
+      eeveeEl.hidden = true;
+      stageEl.appendChild(eeveeEl);
     }
 
     fit();

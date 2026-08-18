@@ -1137,6 +1137,9 @@ window.KX = window.KX || {};
     // the map's --px-* palette is theme-independent, but the graph is drawn
     // from the terminal tokens, so it has to follow
     if (KX.notesGraph) KX.notesGraph.repaint();
+    // the eevee column beside the map swaps art with the theme, and the two
+    // aren't the same shape — re-size it (a no-op away from #interactive)
+    if (KX.region) KX.region.fit();
   }
 
   function updateThemeLabel() {
@@ -1251,9 +1254,29 @@ window.KX = window.KX || {};
     if (close) close.addEventListener('click', sideClose);
   }
 
+  /* -----------------------------------------------------
+     Eevee art
+     ----------------------------------------------------- */
+
+  /**
+   * The umbreon/espeon pair is written once, in the blog section — the home
+   * page borrows it rather than repeating 46 lines of braille in the markup
+   * (region.js borrows the same pair for the map stage). The clone carries
+   * [aria-hidden] and [data-no-type] with it, so it stays out of both the
+   * accessibility tree and the typing engine; that is also why this has to
+   * run before show() types the home section.
+   */
+  function initEevee() {
+    var slot = document.getElementById('home-eevee');
+    var source = document.querySelector('#blog .eevee');
+    if (!slot || !source) return;
+    slot.appendChild(source.cloneNode(true));
+  }
+
   function boot() {
     initTabs();
     renderModules();
+    initEevee();
     initNotesGraph();
     initTheme();
     initSide();

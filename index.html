@@ -216,6 +216,9 @@
                           </div>-->
 
             </details>
+
+            <!-- filled by script.js with a clone of the blog section's pair -->
+            <div class="eevee-slot" id="home-eevee" data-no-type></div>
           </div>
 
           <aside class="rail">
@@ -385,7 +388,15 @@
         </header>
 
         <div class="blog-coming-soon">
-          <pre class="ascii-art umbreon" aria-hidden="true" data-no-type>
+          <!-- The two eeveelutions, one per theme: style.css shows whichever
+               matches [data-theme] and hides the other. This is the only copy
+               of either in the markup — script.js clones the pair under the
+               home page's fun facts and region.js clones it again into the map
+               stage, so 46 lines of braille live in exactly one place.
+               data-cols/data-rows are for region.js: the two have different
+               aspects, so it has to size each one to its own. -->
+          <div class="eevee" aria-hidden="true" data-no-type>
+            <pre class="ascii-art umbreon" data-cols="29" data-rows="23">
 ⢀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⡀
 ⠸⣿⣿⣷⣦⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣶⣾⣿⣿⠇
 ⠀⢻⣿⣿⠿⠛⠳⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⠞⠛⠻⢿⣿⡟⠀
@@ -410,6 +421,32 @@
 ⠀⠀⠀⠀⠀⠀⠈⠿⠿⠿⣿⣿⣿⣿⠋⢿⣿⣿⣿⠿⠿⠿⠃⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠀⠀⠀⠈⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 </pre>
+            <pre class="ascii-art espeon" data-cols="47" data-rows="23">
+⠀⠀⠀⠀⠀⠀⢠⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⢠⠃⢁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⢸⣄⠀⠑⢄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠘⣯⢣⡀⠀⠑⢄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⢹⠀⢳⡀⡀⠠⡑⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠈⡆⠀⢱⣘⠶⠒⠉⠀⠒⠢⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡠⠔⠂⠀⡆⠀⠀
+⠀⠀⣀⠀⠀⠠⠀⠼⢵⣞⠁⠀⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠉⠀⠒⠒⠒⠂⠤⠄⠤⢴⠆⠀⠀⠀⢀⡤⠊⠁⣀⠠⠄⠚⠁⠀⠀
+⢰⣊⠀⠀⠀⠀⠀⢀⣿⣿⣀⣴⣶⡄⠀⠀⠀⠀⠐⠀⢀⣀⡠⠤⠤⠔⠐⠒⣒⡶⠖⠁⠀⠀⠀⢠⠊⢀⣴⠟⠀⣀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠈⠿⠊⠙⣿⣾⠏⠘⠫⢁⠔⢂⣀⡀⢀⠁⠀⠀⣠⠔⢊⡠⠔⠋⠁⠀⠀⠀⠀⠀⢠⠇⢰⡿⠋⠁⢀⣀⡀⠀⠉⢲⡄
+⠀⠀⠀⠀⠀⠀⠀⠀⠱⡈⠀⠀⠀⢿⣯⣵⡿⠃⠈⠑⠢⡜⠓⠈⠁⠀⠀⠀⠀⠀⠀⠀⠀⢀⡏⢠⢋⡤⠒⠉⠁⠀⠀⠉⠒⠊⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠻⣀⢀⣀⢉⠉⠐⢺⢠⠰⠑⠈⢦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠁⢰⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠁⠀⠀⠀⠸⡼⡧⡀⠀⠀⢧⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠱⡈⠒⠤⣘⡄⠀⠀⠀⠀⠀⠀⠀⠀⠈⡇⢰⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠱⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⠀⠀⠀⠀⠀⠀⠀⠀⠘⢦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡇⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣟⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠉⢢⡀⠀⠀⠀⠀⠀⠀⠀⣸⠁⠸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⠀⠀⠀⢸⡖⠀⠀⠀⠀⠀⠀⠀⠈⠒⠤⣀⠀⠀⠀⢀⠃⢀⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠇⠀⠀⢸⠁⣀⠤⠒⠀⠀⠀⠀⠀⠀⠀⠈⠑⢄⣠⠂⢠⠎⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⠄⠀⡼⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠚⠁⣴⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⠄⢰⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡜⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡆⠄⢸⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⢁⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⠉⣰⡯⢿⠶⢄⡀⠀⠀⠀⠀⠀⠀⠀⠀⡀⢀⡠⠎⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠉⠀⠀⠁⠀⠀⠚⠓⠒⠒⠒⠒⠂⠉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+</pre>
+          </div>
           <p>topics in the queue:</p>
           <ul class="topic-queue">
             <li>- oxford first year in summary + first impressions</li>
