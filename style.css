@@ -184,6 +184,12 @@ body {
   display: flex;
 }
 
+.no-script-message {
+  margin: auto;
+  color: var(--text-dim);
+  font-size: var(--fs-sm);
+}
+
 a {
   color: var(--link);
   text-decoration: none;
