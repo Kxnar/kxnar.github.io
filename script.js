@@ -663,6 +663,9 @@ window.KX = window.KX || {};
         print('open: notes vault is not published yet.', 'dim');
         return;
       }
+      if (t === 'resume') {
+         window.open('cv.pdf', '_blank', 'noopener');
+      }
       if (!LINKS[t]) { print('open: unknown target: ' + esc(t), null); return; }
       print('opening ' + esc(t) + ' …', 'dim');
       window.open(LINKS[t], '_blank', 'noopener');
