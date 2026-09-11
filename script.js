@@ -118,7 +118,7 @@ window.KX = window.KX || {};
       notes: 'logic-and-probability',
       desc: 'what the formal machinery actually means — interpretations of probability, conditionals, and the paradoxes of confirmation.'
     },
-    
+
 
     {
       code: 'cs.ips',
@@ -144,7 +144,7 @@ window.KX = window.KX || {};
       desc: 'idk i havent done it yet it seems very familiar to alan turing on computability'
     },
 
-   
+
 
     {
       code: 'cs.la',
@@ -613,7 +613,7 @@ window.KX = window.KX || {};
         return;
       }
       if (dir === 'projects') {
-        print('fracta   shotlab', null);
+        print('fracta   shotlab   bta anywhere   squid ink', null);
         return;
       }
       if (dir === 'education') {
