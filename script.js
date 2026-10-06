@@ -613,7 +613,9 @@ window.KX = window.KX || {};
         return;
       }
       if (dir === 'projects') {
-        print('fracta   shotlab   bta anywhere   squid ink', null);
+        print(Array.prototype.map.call(document.querySelectorAll('#projects .project-name'), function (name) {
+          return esc(name.textContent.trim());
+        }).join('   '), null);
         return;
       }
       if (dir === 'education') {

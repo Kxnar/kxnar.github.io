@@ -1279,6 +1279,7 @@ input[type="range"]::-moz-range-thumb {
 .project-header {
   display: flex;
   align-items: baseline;
+  flex-wrap: wrap;
   gap: var(--sp-3);
   margin-bottom: var(--sp-2);
 }
@@ -1316,6 +1317,7 @@ input[type="range"]::-moz-range-thumb {
   padding: 0.1rem 0.45rem;
 }
 .project-link { font-size: var(--fs-sm); color: var(--link); }
+.project-status { color: var(--accent); }
 
 /* ===========================
    BLOG
